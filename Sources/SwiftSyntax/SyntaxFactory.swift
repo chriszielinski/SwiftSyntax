@@ -35,28 +35,21 @@ public enum SyntaxFactory {
     let data = SyntaxData(raw: .node(.unknown, 
                                      tokens.map { $0.data.raw },
                                      .present))
-    return Syntax(root: data, data: data)
+    return UnknownSyntax(root: data, data: data)
   }
 
 /// MARK: Syntax Node Creation APIs
 
 
-  public static func makeBlankDecl() -> DeclSyntax {
-    let data = SyntaxData(raw: .node(.decl, [
-    ], .present))
-    return DeclSyntax(root: data, data: data)
-  }
+
+
+
+
 
   public static func makeBlankUnknownDecl() -> UnknownDeclSyntax {
     let data = SyntaxData(raw: .node(.unknownDecl, [
     ], .present))
     return UnknownDeclSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankExpr() -> ExprSyntax {
-    let data = SyntaxData(raw: .node(.expr, [
-    ], .present))
-    return ExprSyntax(root: data, data: data)
   }
 
   public static func makeBlankUnknownExpr() -> UnknownExprSyntax {
@@ -65,22 +58,10 @@ public enum SyntaxFactory {
     return UnknownExprSyntax(root: data, data: data)
   }
 
-  public static func makeBlankStmt() -> StmtSyntax {
-    let data = SyntaxData(raw: .node(.stmt, [
-    ], .present))
-    return StmtSyntax(root: data, data: data)
-  }
-
   public static func makeBlankUnknownStmt() -> UnknownStmtSyntax {
     let data = SyntaxData(raw: .node(.unknownStmt, [
     ], .present))
     return UnknownStmtSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankType() -> TypeSyntax {
-    let data = SyntaxData(raw: .node(.type, [
-    ], .present))
-    return TypeSyntax(root: data, data: data)
   }
 
   public static func makeBlankUnknownType() -> UnknownTypeSyntax {
@@ -89,29 +70,67 @@ public enum SyntaxFactory {
     return UnknownTypeSyntax(root: data, data: data)
   }
 
-  public static func makeBlankPattern() -> PatternSyntax {
-    let data = SyntaxData(raw: .node(.pattern, [
-    ], .present))
-    return PatternSyntax(root: data, data: data)
-  }
-
   public static func makeBlankUnknownPattern() -> UnknownPatternSyntax {
     let data = SyntaxData(raw: .node(.unknownPattern, [
     ], .present))
     return UnknownPatternSyntax(root: data, data: data)
   }
-  public static func makeInOutExpr(ampersand: TokenSyntax, identifier: TokenSyntax) -> InOutExprSyntax {
+  public static func makeCodeBlockItem(item: Syntax, semicolon: TokenSyntax?) -> CodeBlockItemSyntax {
+    let data = SyntaxData(raw: .node(.codeBlockItem, [
+      item.data.raw,
+      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
+    ], .present))
+    return CodeBlockItemSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankCodeBlockItem() -> CodeBlockItemSyntax {
+    let data = SyntaxData(raw: .node(.codeBlockItem, [
+      RawSyntax.missing(.unknown),
+      RawSyntax.missingToken(.semicolon),
+    ], .present))
+    return CodeBlockItemSyntax(root: data, data: data)
+  }
+  public static func makeCodeBlockItemList(
+    _ elements: [CodeBlockItemSyntax]) -> CodeBlockItemListSyntax {
+    let data = SyntaxData(raw: .node(.codeBlockItemList,
+                                     elements.map { $0.data.raw }, .present))
+    return CodeBlockItemListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankCodeBlockItemList() -> CodeBlockItemListSyntax {
+    let data = SyntaxData(raw: .node(.codeBlockItemList, [
+    ], .present))
+    return CodeBlockItemListSyntax(root: data, data: data)
+  }
+  public static func makeCodeBlock(leftBrace: TokenSyntax, statements: CodeBlockItemListSyntax, rightBrace: TokenSyntax) -> CodeBlockSyntax {
+    let data = SyntaxData(raw: .node(.codeBlock, [
+      leftBrace.data.raw,
+      statements.data.raw,
+      rightBrace.data.raw,
+    ], .present))
+    return CodeBlockSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankCodeBlock() -> CodeBlockSyntax {
+    let data = SyntaxData(raw: .node(.codeBlock, [
+      RawSyntax.missingToken(.leftBrace),
+      RawSyntax.missing(.codeBlockItemList),
+      RawSyntax.missingToken(.rightBrace),
+    ], .present))
+    return CodeBlockSyntax(root: data, data: data)
+  }
+  public static func makeInOutExpr(ampersand: TokenSyntax, expression: ExprSyntax) -> InOutExprSyntax {
     let data = SyntaxData(raw: .node(.inOutExpr, [
       ampersand.data.raw,
-      identifier.data.raw,
+      expression.data.raw,
     ], .present))
     return InOutExprSyntax(root: data, data: data)
   }
 
   public static func makeBlankInOutExpr() -> InOutExprSyntax {
     let data = SyntaxData(raw: .node(.inOutExpr, [
-      RawSyntax.missingToken(.ampersand),
-      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missingToken(.prefixAmpersand),
+      RawSyntax.missing(.expr),
     ], .present))
     return InOutExprSyntax(root: data, data: data)
   }
@@ -140,20 +159,206 @@ public enum SyntaxFactory {
     ], .present))
     return FunctionCallArgumentListSyntax(root: data, data: data)
   }
-  public static func makeTryOperator(tryKeyword: TokenSyntax, questionOrExclamationMark: TokenSyntax?) -> TryOperatorSyntax {
-    let data = SyntaxData(raw: .node(.tryOperator, [
-      tryKeyword.data.raw,
-      questionOrExclamationMark?.data.raw ?? RawSyntax.missingToken(.postfixQuestionMark),
-    ], .present))
-    return TryOperatorSyntax(root: data, data: data)
+  public static func makeTupleElementList(
+    _ elements: [TupleElementSyntax]) -> TupleElementListSyntax {
+    let data = SyntaxData(raw: .node(.tupleElementList,
+                                     elements.map { $0.data.raw }, .present))
+    return TupleElementListSyntax(root: data, data: data)
   }
 
-  public static func makeBlankTryOperator() -> TryOperatorSyntax {
-    let data = SyntaxData(raw: .node(.tryOperator, [
+  public static func makeBlankTupleElementList() -> TupleElementListSyntax {
+    let data = SyntaxData(raw: .node(.tupleElementList, [
+    ], .present))
+    return TupleElementListSyntax(root: data, data: data)
+  }
+  public static func makeArrayElementList(
+    _ elements: [ArrayElementSyntax]) -> ArrayElementListSyntax {
+    let data = SyntaxData(raw: .node(.arrayElementList,
+                                     elements.map { $0.data.raw }, .present))
+    return ArrayElementListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankArrayElementList() -> ArrayElementListSyntax {
+    let data = SyntaxData(raw: .node(.arrayElementList, [
+    ], .present))
+    return ArrayElementListSyntax(root: data, data: data)
+  }
+  public static func makeDictionaryElementList(
+    _ elements: [DictionaryElementSyntax]) -> DictionaryElementListSyntax {
+    let data = SyntaxData(raw: .node(.dictionaryElementList,
+                                     elements.map { $0.data.raw }, .present))
+    return DictionaryElementListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankDictionaryElementList() -> DictionaryElementListSyntax {
+    let data = SyntaxData(raw: .node(.dictionaryElementList, [
+    ], .present))
+    return DictionaryElementListSyntax(root: data, data: data)
+  }
+  public static func makeStringInterpolationSegments(
+    _ elements: [Syntax]) -> StringInterpolationSegmentsSyntax {
+    let data = SyntaxData(raw: .node(.stringInterpolationSegments,
+                                     elements.map { $0.data.raw }, .present))
+    return StringInterpolationSegmentsSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankStringInterpolationSegments() -> StringInterpolationSegmentsSyntax {
+    let data = SyntaxData(raw: .node(.stringInterpolationSegments, [
+    ], .present))
+    return StringInterpolationSegmentsSyntax(root: data, data: data)
+  }
+  public static func makeTryExpr(tryKeyword: TokenSyntax, questionOrExclamationMark: TokenSyntax?, expression: ExprSyntax) -> TryExprSyntax {
+    let data = SyntaxData(raw: .node(.tryExpr, [
+      tryKeyword.data.raw,
+      questionOrExclamationMark?.data.raw ?? RawSyntax.missingToken(.postfixQuestionMark),
+      expression.data.raw,
+    ], .present))
+    return TryExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankTryExpr() -> TryExprSyntax {
+    let data = SyntaxData(raw: .node(.tryExpr, [
       RawSyntax.missingToken(.tryKeyword),
       RawSyntax.missingToken(.postfixQuestionMark),
+      RawSyntax.missing(.expr),
     ], .present))
-    return TryOperatorSyntax(root: data, data: data)
+    return TryExprSyntax(root: data, data: data)
+  }
+  public static func makeDeclNameArgument(name: TokenSyntax, colon: TokenSyntax) -> DeclNameArgumentSyntax {
+    let data = SyntaxData(raw: .node(.declNameArgument, [
+      name.data.raw,
+      colon.data.raw,
+    ], .present))
+    return DeclNameArgumentSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankDeclNameArgument() -> DeclNameArgumentSyntax {
+    let data = SyntaxData(raw: .node(.declNameArgument, [
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missingToken(.colon),
+    ], .present))
+    return DeclNameArgumentSyntax(root: data, data: data)
+  }
+  public static func makeDeclNameArgumentList(
+    _ elements: [DeclNameArgumentSyntax]) -> DeclNameArgumentListSyntax {
+    let data = SyntaxData(raw: .node(.declNameArgumentList,
+                                     elements.map { $0.data.raw }, .present))
+    return DeclNameArgumentListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankDeclNameArgumentList() -> DeclNameArgumentListSyntax {
+    let data = SyntaxData(raw: .node(.declNameArgumentList, [
+    ], .present))
+    return DeclNameArgumentListSyntax(root: data, data: data)
+  }
+  public static func makeDeclNameArguments(leftParen: TokenSyntax, arguments: DeclNameArgumentListSyntax, rightParen: TokenSyntax) -> DeclNameArgumentsSyntax {
+    let data = SyntaxData(raw: .node(.declNameArguments, [
+      leftParen.data.raw,
+      arguments.data.raw,
+      rightParen.data.raw,
+    ], .present))
+    return DeclNameArgumentsSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankDeclNameArguments() -> DeclNameArgumentsSyntax {
+    let data = SyntaxData(raw: .node(.declNameArguments, [
+      RawSyntax.missingToken(.leftParen),
+      RawSyntax.missing(.declNameArgumentList),
+      RawSyntax.missingToken(.rightParen),
+    ], .present))
+    return DeclNameArgumentsSyntax(root: data, data: data)
+  }
+  public static func makeIdentifierExpr(identifier: TokenSyntax, declNameArguments: DeclNameArgumentsSyntax?) -> IdentifierExprSyntax {
+    let data = SyntaxData(raw: .node(.identifierExpr, [
+      identifier.data.raw,
+      declNameArguments?.data.raw ?? RawSyntax.missing(.declNameArguments),
+    ], .present))
+    return IdentifierExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankIdentifierExpr() -> IdentifierExprSyntax {
+    let data = SyntaxData(raw: .node(.identifierExpr, [
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missing(.declNameArguments),
+    ], .present))
+    return IdentifierExprSyntax(root: data, data: data)
+  }
+  public static func makeSuperRefExpr(superKeyword: TokenSyntax) -> SuperRefExprSyntax {
+    let data = SyntaxData(raw: .node(.superRefExpr, [
+      superKeyword.data.raw,
+    ], .present))
+    return SuperRefExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankSuperRefExpr() -> SuperRefExprSyntax {
+    let data = SyntaxData(raw: .node(.superRefExpr, [
+      RawSyntax.missingToken(.superKeyword),
+    ], .present))
+    return SuperRefExprSyntax(root: data, data: data)
+  }
+  public static func makeNilLiteralExpr(nilKeyword: TokenSyntax) -> NilLiteralExprSyntax {
+    let data = SyntaxData(raw: .node(.nilLiteralExpr, [
+      nilKeyword.data.raw,
+    ], .present))
+    return NilLiteralExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankNilLiteralExpr() -> NilLiteralExprSyntax {
+    let data = SyntaxData(raw: .node(.nilLiteralExpr, [
+      RawSyntax.missingToken(.nilKeyword),
+    ], .present))
+    return NilLiteralExprSyntax(root: data, data: data)
+  }
+  public static func makeDiscardAssignmentExpr(wildcard: TokenSyntax) -> DiscardAssignmentExprSyntax {
+    let data = SyntaxData(raw: .node(.discardAssignmentExpr, [
+      wildcard.data.raw,
+    ], .present))
+    return DiscardAssignmentExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankDiscardAssignmentExpr() -> DiscardAssignmentExprSyntax {
+    let data = SyntaxData(raw: .node(.discardAssignmentExpr, [
+      RawSyntax.missingToken(.wildcardKeyword),
+    ], .present))
+    return DiscardAssignmentExprSyntax(root: data, data: data)
+  }
+  public static func makeAssignmentExpr(assignToken: TokenSyntax) -> AssignmentExprSyntax {
+    let data = SyntaxData(raw: .node(.assignmentExpr, [
+      assignToken.data.raw,
+    ], .present))
+    return AssignmentExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankAssignmentExpr() -> AssignmentExprSyntax {
+    let data = SyntaxData(raw: .node(.assignmentExpr, [
+      RawSyntax.missingToken(.equal),
+    ], .present))
+    return AssignmentExprSyntax(root: data, data: data)
+  }
+  public static func makeSequenceExpr(elements: ExprListSyntax) -> SequenceExprSyntax {
+    let data = SyntaxData(raw: .node(.sequenceExpr, [
+      elements.data.raw,
+    ], .present))
+    return SequenceExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankSequenceExpr() -> SequenceExprSyntax {
+    let data = SyntaxData(raw: .node(.sequenceExpr, [
+      RawSyntax.missing(.exprList),
+    ], .present))
+    return SequenceExprSyntax(root: data, data: data)
+  }
+  public static func makeExprList(
+    _ elements: [ExprSyntax]) -> ExprListSyntax {
+    let data = SyntaxData(raw: .node(.exprList,
+                                     elements.map { $0.data.raw }, .present))
+    return ExprListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankExprList() -> ExprListSyntax {
+    let data = SyntaxData(raw: .node(.exprList, [
+    ], .present))
+    return ExprListSyntax(root: data, data: data)
   }
   public static func makePoundLineExpr(poundLine: TokenSyntax) -> PoundLineExprSyntax {
     let data = SyntaxData(raw: .node(.poundLineExpr, [
@@ -194,6 +399,19 @@ public enum SyntaxFactory {
     ], .present))
     return PoundFunctionExprSyntax(root: data, data: data)
   }
+  public static func makePoundDsohandleExpr(poundDsohandle: TokenSyntax) -> PoundDsohandleExprSyntax {
+    let data = SyntaxData(raw: .node(.poundDsohandleExpr, [
+      poundDsohandle.data.raw,
+    ], .present))
+    return PoundDsohandleExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankPoundDsohandleExpr() -> PoundDsohandleExprSyntax {
+    let data = SyntaxData(raw: .node(.poundDsohandleExpr, [
+      RawSyntax.missingToken(.poundDsohandleKeyword),
+    ], .present))
+    return PoundDsohandleExprSyntax(root: data, data: data)
+  }
   public static func makeSymbolicReferenceExpr(identifier: TokenSyntax, genericArgumentClause: GenericArgumentClauseSyntax?) -> SymbolicReferenceExprSyntax {
     let data = SyntaxData(raw: .node(.symbolicReferenceExpr, [
       identifier.data.raw,
@@ -224,9 +442,36 @@ public enum SyntaxFactory {
     ], .present))
     return PrefixOperatorExprSyntax(root: data, data: data)
   }
-  public static func makeFloatLiteralExpr(sign: TokenSyntax?, floatingDigits: TokenSyntax) -> FloatLiteralExprSyntax {
+  public static func makeBinaryOperatorExpr(operatorToken: TokenSyntax) -> BinaryOperatorExprSyntax {
+    let data = SyntaxData(raw: .node(.binaryOperatorExpr, [
+      operatorToken.data.raw,
+    ], .present))
+    return BinaryOperatorExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankBinaryOperatorExpr() -> BinaryOperatorExprSyntax {
+    let data = SyntaxData(raw: .node(.binaryOperatorExpr, [
+      RawSyntax.missingToken(.unknown("")),
+    ], .present))
+    return BinaryOperatorExprSyntax(root: data, data: data)
+  }
+  public static func makeArrowExpr(throwsToken: TokenSyntax?, arrowToken: TokenSyntax) -> ArrowExprSyntax {
+    let data = SyntaxData(raw: .node(.arrowExpr, [
+      throwsToken?.data.raw ?? RawSyntax.missingToken(.throwsKeyword),
+      arrowToken.data.raw,
+    ], .present))
+    return ArrowExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankArrowExpr() -> ArrowExprSyntax {
+    let data = SyntaxData(raw: .node(.arrowExpr, [
+      RawSyntax.missingToken(.throwsKeyword),
+      RawSyntax.missingToken(.arrow),
+    ], .present))
+    return ArrowExprSyntax(root: data, data: data)
+  }
+  public static func makeFloatLiteralExpr(floatingDigits: TokenSyntax) -> FloatLiteralExprSyntax {
     let data = SyntaxData(raw: .node(.floatLiteralExpr, [
-      sign?.data.raw ?? RawSyntax.missingToken(.prefixOperator("")),
       floatingDigits.data.raw,
     ], .present))
     return FloatLiteralExprSyntax(root: data, data: data)
@@ -234,29 +479,77 @@ public enum SyntaxFactory {
 
   public static func makeBlankFloatLiteralExpr() -> FloatLiteralExprSyntax {
     let data = SyntaxData(raw: .node(.floatLiteralExpr, [
-      RawSyntax.missingToken(.prefixOperator("")),
       RawSyntax.missingToken(.floatingLiteral("")),
     ], .present))
     return FloatLiteralExprSyntax(root: data, data: data)
   }
-  public static func makeFunctionCallExpr(calledExpression: ExprSyntax, leftParen: TokenSyntax, argumentList: FunctionCallArgumentListSyntax, rightParen: TokenSyntax) -> FunctionCallExprSyntax {
-    let data = SyntaxData(raw: .node(.functionCallExpr, [
-      calledExpression.data.raw,
+  public static func makeTupleExpr(leftParen: TokenSyntax, elementList: TupleElementListSyntax, rightParen: TokenSyntax) -> TupleExprSyntax {
+    let data = SyntaxData(raw: .node(.tupleExpr, [
       leftParen.data.raw,
-      argumentList.data.raw,
+      elementList.data.raw,
       rightParen.data.raw,
     ], .present))
-    return FunctionCallExprSyntax(root: data, data: data)
+    return TupleExprSyntax(root: data, data: data)
   }
 
-  public static func makeBlankFunctionCallExpr() -> FunctionCallExprSyntax {
-    let data = SyntaxData(raw: .node(.functionCallExpr, [
-      RawSyntax.missing(.expr),
+  public static func makeBlankTupleExpr() -> TupleExprSyntax {
+    let data = SyntaxData(raw: .node(.tupleExpr, [
       RawSyntax.missingToken(.leftParen),
-      RawSyntax.missing(.functionCallArgumentList),
+      RawSyntax.missing(.tupleElementList),
       RawSyntax.missingToken(.rightParen),
     ], .present))
-    return FunctionCallExprSyntax(root: data, data: data)
+    return TupleExprSyntax(root: data, data: data)
+  }
+  public static func makeArrayExpr(leftSquare: TokenSyntax, elements: ArrayElementListSyntax, rightSquare: TokenSyntax) -> ArrayExprSyntax {
+    let data = SyntaxData(raw: .node(.arrayExpr, [
+      leftSquare.data.raw,
+      elements.data.raw,
+      rightSquare.data.raw,
+    ], .present))
+    return ArrayExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankArrayExpr() -> ArrayExprSyntax {
+    let data = SyntaxData(raw: .node(.arrayExpr, [
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missing(.arrayElementList),
+      RawSyntax.missingToken(.unknown("")),
+    ], .present))
+    return ArrayExprSyntax(root: data, data: data)
+  }
+  public static func makeDictionaryExpr(leftSquare: TokenSyntax, content: Syntax, rightSquare: TokenSyntax) -> DictionaryExprSyntax {
+    let data = SyntaxData(raw: .node(.dictionaryExpr, [
+      leftSquare.data.raw,
+      content.data.raw,
+      rightSquare.data.raw,
+    ], .present))
+    return DictionaryExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankDictionaryExpr() -> DictionaryExprSyntax {
+    let data = SyntaxData(raw: .node(.dictionaryExpr, [
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missing(.unknown),
+      RawSyntax.missingToken(.unknown("")),
+    ], .present))
+    return DictionaryExprSyntax(root: data, data: data)
+  }
+  public static func makeImplicitMemberExpr(dot: TokenSyntax, name: TokenSyntax, declNameArguments: DeclNameArgumentsSyntax?) -> ImplicitMemberExprSyntax {
+    let data = SyntaxData(raw: .node(.implicitMemberExpr, [
+      dot.data.raw,
+      name.data.raw,
+      declNameArguments?.data.raw ?? RawSyntax.missing(.declNameArguments),
+    ], .present))
+    return ImplicitMemberExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankImplicitMemberExpr() -> ImplicitMemberExprSyntax {
+    let data = SyntaxData(raw: .node(.implicitMemberExpr, [
+      RawSyntax.missingToken(.prefixPeriod),
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missing(.declNameArguments),
+    ], .present))
+    return ImplicitMemberExprSyntax(root: data, data: data)
   }
   public static func makeFunctionCallArgument(label: TokenSyntax?, colon: TokenSyntax?, expression: ExprSyntax, trailingComma: TokenSyntax?) -> FunctionCallArgumentSyntax {
     let data = SyntaxData(raw: .node(.functionCallArgument, [
@@ -277,9 +570,61 @@ public enum SyntaxFactory {
     ], .present))
     return FunctionCallArgumentSyntax(root: data, data: data)
   }
-  public static func makeIntegerLiteralExpr(sign: TokenSyntax?, digits: TokenSyntax) -> IntegerLiteralExprSyntax {
+  public static func makeTupleElement(label: TokenSyntax?, colon: TokenSyntax?, expression: ExprSyntax, trailingComma: TokenSyntax?) -> TupleElementSyntax {
+    let data = SyntaxData(raw: .node(.tupleElement, [
+      label?.data.raw ?? RawSyntax.missingToken(.identifier("")),
+      colon?.data.raw ?? RawSyntax.missingToken(.colon),
+      expression.data.raw,
+      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
+    ], .present))
+    return TupleElementSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankTupleElement() -> TupleElementSyntax {
+    let data = SyntaxData(raw: .node(.tupleElement, [
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missingToken(.colon),
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.comma),
+    ], .present))
+    return TupleElementSyntax(root: data, data: data)
+  }
+  public static func makeArrayElement(expression: ExprSyntax, trailingComma: TokenSyntax?) -> ArrayElementSyntax {
+    let data = SyntaxData(raw: .node(.arrayElement, [
+      expression.data.raw,
+      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
+    ], .present))
+    return ArrayElementSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankArrayElement() -> ArrayElementSyntax {
+    let data = SyntaxData(raw: .node(.arrayElement, [
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.comma),
+    ], .present))
+    return ArrayElementSyntax(root: data, data: data)
+  }
+  public static func makeDictionaryElement(keyExpression: ExprSyntax, colon: TokenSyntax, valueExpression: ExprSyntax, trailingComma: TokenSyntax?) -> DictionaryElementSyntax {
+    let data = SyntaxData(raw: .node(.dictionaryElement, [
+      keyExpression.data.raw,
+      colon.data.raw,
+      valueExpression.data.raw,
+      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
+    ], .present))
+    return DictionaryElementSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankDictionaryElement() -> DictionaryElementSyntax {
+    let data = SyntaxData(raw: .node(.dictionaryElement, [
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.colon),
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.comma),
+    ], .present))
+    return DictionaryElementSyntax(root: data, data: data)
+  }
+  public static func makeIntegerLiteralExpr(digits: TokenSyntax) -> IntegerLiteralExprSyntax {
     let data = SyntaxData(raw: .node(.integerLiteralExpr, [
-      sign?.data.raw ?? RawSyntax.missingToken(.prefixOperator("")),
       digits.data.raw,
     ], .present))
     return IntegerLiteralExprSyntax(root: data, data: data)
@@ -287,7 +632,6 @@ public enum SyntaxFactory {
 
   public static func makeBlankIntegerLiteralExpr() -> IntegerLiteralExprSyntax {
     let data = SyntaxData(raw: .node(.integerLiteralExpr, [
-      RawSyntax.missingToken(.prefixOperator("")),
       RawSyntax.missingToken(.integerLiteral("")),
     ], .present))
     return IntegerLiteralExprSyntax(root: data, data: data)
@@ -305,15 +649,519 @@ public enum SyntaxFactory {
     ], .present))
     return StringLiteralExprSyntax(root: data, data: data)
   }
-  public static func makeTypealiasDecl(attributes: AttributeListSyntax?, accessLevelModifier: AccessLevelModifierSyntax?, typealiasKeyword: TokenSyntax, identifier: TokenSyntax, genericParameterClause: GenericParameterClauseSyntax?, equals: TokenSyntax, type: TypeSyntax) -> TypealiasDeclSyntax {
+  public static func makeBooleanLiteralExpr(booleanLiteral: TokenSyntax) -> BooleanLiteralExprSyntax {
+    let data = SyntaxData(raw: .node(.booleanLiteralExpr, [
+      booleanLiteral.data.raw,
+    ], .present))
+    return BooleanLiteralExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankBooleanLiteralExpr() -> BooleanLiteralExprSyntax {
+    let data = SyntaxData(raw: .node(.booleanLiteralExpr, [
+      RawSyntax.missingToken(.trueKeyword),
+    ], .present))
+    return BooleanLiteralExprSyntax(root: data, data: data)
+  }
+  public static func makeTernaryExpr(conditionExpression: ExprSyntax, questionMark: TokenSyntax, firstChoice: ExprSyntax, colonMark: TokenSyntax, secondChoice: ExprSyntax) -> TernaryExprSyntax {
+    let data = SyntaxData(raw: .node(.ternaryExpr, [
+      conditionExpression.data.raw,
+      questionMark.data.raw,
+      firstChoice.data.raw,
+      colonMark.data.raw,
+      secondChoice.data.raw,
+    ], .present))
+    return TernaryExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankTernaryExpr() -> TernaryExprSyntax {
+    let data = SyntaxData(raw: .node(.ternaryExpr, [
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.infixQuestionMark),
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.colon),
+      RawSyntax.missing(.expr),
+    ], .present))
+    return TernaryExprSyntax(root: data, data: data)
+  }
+  public static func makeMemberAccessExpr(base: ExprSyntax, dot: TokenSyntax, name: TokenSyntax, declNameArguments: DeclNameArgumentsSyntax?) -> MemberAccessExprSyntax {
+    let data = SyntaxData(raw: .node(.memberAccessExpr, [
+      base.data.raw,
+      dot.data.raw,
+      name.data.raw,
+      declNameArguments?.data.raw ?? RawSyntax.missing(.declNameArguments),
+    ], .present))
+    return MemberAccessExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankMemberAccessExpr() -> MemberAccessExprSyntax {
+    let data = SyntaxData(raw: .node(.memberAccessExpr, [
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.period),
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missing(.declNameArguments),
+    ], .present))
+    return MemberAccessExprSyntax(root: data, data: data)
+  }
+  public static func makeDotSelfExpr(expression: ExprSyntax, dot: TokenSyntax, selfKeyword: TokenSyntax) -> DotSelfExprSyntax {
+    let data = SyntaxData(raw: .node(.dotSelfExpr, [
+      expression.data.raw,
+      dot.data.raw,
+      selfKeyword.data.raw,
+    ], .present))
+    return DotSelfExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankDotSelfExpr() -> DotSelfExprSyntax {
+    let data = SyntaxData(raw: .node(.dotSelfExpr, [
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.period),
+      RawSyntax.missingToken(.selfKeyword),
+    ], .present))
+    return DotSelfExprSyntax(root: data, data: data)
+  }
+  public static func makeIsExpr(isTok: TokenSyntax, typeName: TypeSyntax) -> IsExprSyntax {
+    let data = SyntaxData(raw: .node(.isExpr, [
+      isTok.data.raw,
+      typeName.data.raw,
+    ], .present))
+    return IsExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankIsExpr() -> IsExprSyntax {
+    let data = SyntaxData(raw: .node(.isExpr, [
+      RawSyntax.missingToken(.isKeyword),
+      RawSyntax.missing(.type),
+    ], .present))
+    return IsExprSyntax(root: data, data: data)
+  }
+  public static func makeAsExpr(asTok: TokenSyntax, questionOrExclamationMark: TokenSyntax?, typeName: TypeSyntax) -> AsExprSyntax {
+    let data = SyntaxData(raw: .node(.asExpr, [
+      asTok.data.raw,
+      questionOrExclamationMark?.data.raw ?? RawSyntax.missingToken(.postfixQuestionMark),
+      typeName.data.raw,
+    ], .present))
+    return AsExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankAsExpr() -> AsExprSyntax {
+    let data = SyntaxData(raw: .node(.asExpr, [
+      RawSyntax.missingToken(.asKeyword),
+      RawSyntax.missingToken(.postfixQuestionMark),
+      RawSyntax.missing(.type),
+    ], .present))
+    return AsExprSyntax(root: data, data: data)
+  }
+  public static func makeTypeExpr(type: TypeSyntax) -> TypeExprSyntax {
+    let data = SyntaxData(raw: .node(.typeExpr, [
+      type.data.raw,
+    ], .present))
+    return TypeExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankTypeExpr() -> TypeExprSyntax {
+    let data = SyntaxData(raw: .node(.typeExpr, [
+      RawSyntax.missing(.type),
+    ], .present))
+    return TypeExprSyntax(root: data, data: data)
+  }
+  public static func makeClosureCaptureItem(specifier: TokenListSyntax?, name: TokenSyntax?, assignToken: TokenSyntax?, expression: ExprSyntax, trailingComma: TokenSyntax?) -> ClosureCaptureItemSyntax {
+    let data = SyntaxData(raw: .node(.closureCaptureItem, [
+      specifier?.data.raw ?? RawSyntax.missingToken(.unknown("")),
+      name?.data.raw ?? RawSyntax.missingToken(.identifier("")),
+      assignToken?.data.raw ?? RawSyntax.missingToken(.equal),
+      expression.data.raw,
+      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
+    ], .present))
+    return ClosureCaptureItemSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankClosureCaptureItem() -> ClosureCaptureItemSyntax {
+    let data = SyntaxData(raw: .node(.closureCaptureItem, [
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missingToken(.equal),
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.comma),
+    ], .present))
+    return ClosureCaptureItemSyntax(root: data, data: data)
+  }
+  public static func makeClosureCaptureItemList(
+    _ elements: [ClosureCaptureItemSyntax]) -> ClosureCaptureItemListSyntax {
+    let data = SyntaxData(raw: .node(.closureCaptureItemList,
+                                     elements.map { $0.data.raw }, .present))
+    return ClosureCaptureItemListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankClosureCaptureItemList() -> ClosureCaptureItemListSyntax {
+    let data = SyntaxData(raw: .node(.closureCaptureItemList, [
+    ], .present))
+    return ClosureCaptureItemListSyntax(root: data, data: data)
+  }
+  public static func makeClosureCaptureSignature(leftSquare: TokenSyntax, items: ClosureCaptureItemListSyntax?, rightSquare: TokenSyntax) -> ClosureCaptureSignatureSyntax {
+    let data = SyntaxData(raw: .node(.closureCaptureSignature, [
+      leftSquare.data.raw,
+      items?.data.raw ?? RawSyntax.missing(.closureCaptureItemList),
+      rightSquare.data.raw,
+    ], .present))
+    return ClosureCaptureSignatureSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankClosureCaptureSignature() -> ClosureCaptureSignatureSyntax {
+    let data = SyntaxData(raw: .node(.closureCaptureSignature, [
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missing(.closureCaptureItemList),
+      RawSyntax.missingToken(.unknown("")),
+    ], .present))
+    return ClosureCaptureSignatureSyntax(root: data, data: data)
+  }
+  public static func makeClosureParam(name: TokenSyntax, trailingComma: TokenSyntax?) -> ClosureParamSyntax {
+    let data = SyntaxData(raw: .node(.closureParam, [
+      name.data.raw,
+      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
+    ], .present))
+    return ClosureParamSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankClosureParam() -> ClosureParamSyntax {
+    let data = SyntaxData(raw: .node(.closureParam, [
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missingToken(.comma),
+    ], .present))
+    return ClosureParamSyntax(root: data, data: data)
+  }
+  public static func makeClosureParamList(
+    _ elements: [ClosureParamSyntax]) -> ClosureParamListSyntax {
+    let data = SyntaxData(raw: .node(.closureParamList,
+                                     elements.map { $0.data.raw }, .present))
+    return ClosureParamListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankClosureParamList() -> ClosureParamListSyntax {
+    let data = SyntaxData(raw: .node(.closureParamList, [
+    ], .present))
+    return ClosureParamListSyntax(root: data, data: data)
+  }
+  public static func makeClosureSignature(capture: ClosureCaptureSignatureSyntax?, input: Syntax?, throwsTok: TokenSyntax?, output: ReturnClauseSyntax?, inTok: TokenSyntax) -> ClosureSignatureSyntax {
+    let data = SyntaxData(raw: .node(.closureSignature, [
+      capture?.data.raw ?? RawSyntax.missing(.closureCaptureSignature),
+      input?.data.raw ?? RawSyntax.missing(.unknown),
+      throwsTok?.data.raw ?? RawSyntax.missingToken(.throwsKeyword),
+      output?.data.raw ?? RawSyntax.missing(.returnClause),
+      inTok.data.raw,
+    ], .present))
+    return ClosureSignatureSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankClosureSignature() -> ClosureSignatureSyntax {
+    let data = SyntaxData(raw: .node(.closureSignature, [
+      RawSyntax.missing(.closureCaptureSignature),
+      RawSyntax.missing(.unknown),
+      RawSyntax.missingToken(.throwsKeyword),
+      RawSyntax.missing(.returnClause),
+      RawSyntax.missingToken(.inKeyword),
+    ], .present))
+    return ClosureSignatureSyntax(root: data, data: data)
+  }
+  public static func makeClosureExpr(leftBrace: TokenSyntax, signature: ClosureSignatureSyntax?, statements: CodeBlockItemListSyntax, rightBrace: TokenSyntax) -> ClosureExprSyntax {
+    let data = SyntaxData(raw: .node(.closureExpr, [
+      leftBrace.data.raw,
+      signature?.data.raw ?? RawSyntax.missing(.closureSignature),
+      statements.data.raw,
+      rightBrace.data.raw,
+    ], .present))
+    return ClosureExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankClosureExpr() -> ClosureExprSyntax {
+    let data = SyntaxData(raw: .node(.closureExpr, [
+      RawSyntax.missingToken(.leftBrace),
+      RawSyntax.missing(.closureSignature),
+      RawSyntax.missing(.codeBlockItemList),
+      RawSyntax.missingToken(.rightBrace),
+    ], .present))
+    return ClosureExprSyntax(root: data, data: data)
+  }
+  public static func makeUnresolvedPatternExpr(pattern: PatternSyntax) -> UnresolvedPatternExprSyntax {
+    let data = SyntaxData(raw: .node(.unresolvedPatternExpr, [
+      pattern.data.raw,
+    ], .present))
+    return UnresolvedPatternExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankUnresolvedPatternExpr() -> UnresolvedPatternExprSyntax {
+    let data = SyntaxData(raw: .node(.unresolvedPatternExpr, [
+      RawSyntax.missing(.pattern),
+    ], .present))
+    return UnresolvedPatternExprSyntax(root: data, data: data)
+  }
+  public static func makeFunctionCallExpr(calledExpression: ExprSyntax, leftParen: TokenSyntax?, argumentList: FunctionCallArgumentListSyntax, rightParen: TokenSyntax?, trailingClosure: ClosureExprSyntax?) -> FunctionCallExprSyntax {
+    let data = SyntaxData(raw: .node(.functionCallExpr, [
+      calledExpression.data.raw,
+      leftParen?.data.raw ?? RawSyntax.missingToken(.leftParen),
+      argumentList.data.raw,
+      rightParen?.data.raw ?? RawSyntax.missingToken(.rightParen),
+      trailingClosure?.data.raw ?? RawSyntax.missing(.closureExpr),
+    ], .present))
+    return FunctionCallExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankFunctionCallExpr() -> FunctionCallExprSyntax {
+    let data = SyntaxData(raw: .node(.functionCallExpr, [
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.leftParen),
+      RawSyntax.missing(.functionCallArgumentList),
+      RawSyntax.missingToken(.rightParen),
+      RawSyntax.missing(.closureExpr),
+    ], .present))
+    return FunctionCallExprSyntax(root: data, data: data)
+  }
+  public static func makeSubscriptExpr(calledExpression: ExprSyntax, leftBracket: TokenSyntax, argumentList: FunctionCallArgumentListSyntax, rightBracket: TokenSyntax, trailingClosure: ClosureExprSyntax?) -> SubscriptExprSyntax {
+    let data = SyntaxData(raw: .node(.subscriptExpr, [
+      calledExpression.data.raw,
+      leftBracket.data.raw,
+      argumentList.data.raw,
+      rightBracket.data.raw,
+      trailingClosure?.data.raw ?? RawSyntax.missing(.closureExpr),
+    ], .present))
+    return SubscriptExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankSubscriptExpr() -> SubscriptExprSyntax {
+    let data = SyntaxData(raw: .node(.subscriptExpr, [
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.leftSquareBracket),
+      RawSyntax.missing(.functionCallArgumentList),
+      RawSyntax.missingToken(.rightSquareBracket),
+      RawSyntax.missing(.closureExpr),
+    ], .present))
+    return SubscriptExprSyntax(root: data, data: data)
+  }
+  public static func makeOptionalChainingExpr(expression: ExprSyntax, quetionMark: TokenSyntax) -> OptionalChainingExprSyntax {
+    let data = SyntaxData(raw: .node(.optionalChainingExpr, [
+      expression.data.raw,
+      quetionMark.data.raw,
+    ], .present))
+    return OptionalChainingExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankOptionalChainingExpr() -> OptionalChainingExprSyntax {
+    let data = SyntaxData(raw: .node(.optionalChainingExpr, [
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.postfixQuestionMark),
+    ], .present))
+    return OptionalChainingExprSyntax(root: data, data: data)
+  }
+  public static func makeForcedValueExpr(expression: ExprSyntax, exclamationMark: TokenSyntax) -> ForcedValueExprSyntax {
+    let data = SyntaxData(raw: .node(.forcedValueExpr, [
+      expression.data.raw,
+      exclamationMark.data.raw,
+    ], .present))
+    return ForcedValueExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankForcedValueExpr() -> ForcedValueExprSyntax {
+    let data = SyntaxData(raw: .node(.forcedValueExpr, [
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.exclamationMark),
+    ], .present))
+    return ForcedValueExprSyntax(root: data, data: data)
+  }
+  public static func makePostfixUnaryExpr(expression: ExprSyntax, operatorToken: TokenSyntax) -> PostfixUnaryExprSyntax {
+    let data = SyntaxData(raw: .node(.postfixUnaryExpr, [
+      expression.data.raw,
+      operatorToken.data.raw,
+    ], .present))
+    return PostfixUnaryExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankPostfixUnaryExpr() -> PostfixUnaryExprSyntax {
+    let data = SyntaxData(raw: .node(.postfixUnaryExpr, [
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.postfixOperator("")),
+    ], .present))
+    return PostfixUnaryExprSyntax(root: data, data: data)
+  }
+  public static func makeSpecializeExpr(expression: ExprSyntax, genericArgumentClause: GenericArgumentClauseSyntax) -> SpecializeExprSyntax {
+    let data = SyntaxData(raw: .node(.specializeExpr, [
+      expression.data.raw,
+      genericArgumentClause.data.raw,
+    ], .present))
+    return SpecializeExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankSpecializeExpr() -> SpecializeExprSyntax {
+    let data = SyntaxData(raw: .node(.specializeExpr, [
+      RawSyntax.missing(.expr),
+      RawSyntax.missing(.genericArgumentClause),
+    ], .present))
+    return SpecializeExprSyntax(root: data, data: data)
+  }
+  public static func makeStringSegment(content: TokenSyntax) -> StringSegmentSyntax {
+    let data = SyntaxData(raw: .node(.stringSegment, [
+      content.data.raw,
+    ], .present))
+    return StringSegmentSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankStringSegment() -> StringSegmentSyntax {
+    let data = SyntaxData(raw: .node(.stringSegment, [
+      RawSyntax.missingToken(.stringSegment("")),
+    ], .present))
+    return StringSegmentSyntax(root: data, data: data)
+  }
+  public static func makeExpressionSegment(backslash: TokenSyntax, leftParen: TokenSyntax, expression: ExprSyntax, rightParen: TokenSyntax) -> ExpressionSegmentSyntax {
+    let data = SyntaxData(raw: .node(.expressionSegment, [
+      backslash.data.raw,
+      leftParen.data.raw,
+      expression.data.raw,
+      rightParen.data.raw,
+    ], .present))
+    return ExpressionSegmentSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankExpressionSegment() -> ExpressionSegmentSyntax {
+    let data = SyntaxData(raw: .node(.expressionSegment, [
+      RawSyntax.missingToken(.backslash),
+      RawSyntax.missingToken(.leftParen),
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.stringInterpolationAnchor),
+    ], .present))
+    return ExpressionSegmentSyntax(root: data, data: data)
+  }
+  public static func makeStringInterpolationExpr(openQuote: TokenSyntax, segments: StringInterpolationSegmentsSyntax, closeQuote: TokenSyntax) -> StringInterpolationExprSyntax {
+    let data = SyntaxData(raw: .node(.stringInterpolationExpr, [
+      openQuote.data.raw,
+      segments.data.raw,
+      closeQuote.data.raw,
+    ], .present))
+    return StringInterpolationExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankStringInterpolationExpr() -> StringInterpolationExprSyntax {
+    let data = SyntaxData(raw: .node(.stringInterpolationExpr, [
+      RawSyntax.missingToken(.stringQuote),
+      RawSyntax.missing(.stringInterpolationSegments),
+      RawSyntax.missingToken(.stringQuote),
+    ], .present))
+    return StringInterpolationExprSyntax(root: data, data: data)
+  }
+  public static func makeKeyPathExpr(backslash: TokenSyntax, expression: ExprSyntax) -> KeyPathExprSyntax {
+    let data = SyntaxData(raw: .node(.keyPathExpr, [
+      backslash.data.raw,
+      expression.data.raw,
+    ], .present))
+    return KeyPathExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankKeyPathExpr() -> KeyPathExprSyntax {
+    let data = SyntaxData(raw: .node(.keyPathExpr, [
+      RawSyntax.missingToken(.backslash),
+      RawSyntax.missing(.expr),
+    ], .present))
+    return KeyPathExprSyntax(root: data, data: data)
+  }
+  public static func makeObjcNamePiece(name: TokenSyntax, dot: TokenSyntax?) -> ObjcNamePieceSyntax {
+    let data = SyntaxData(raw: .node(.objcNamePiece, [
+      name.data.raw,
+      dot?.data.raw ?? RawSyntax.missingToken(.period),
+    ], .present))
+    return ObjcNamePieceSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankObjcNamePiece() -> ObjcNamePieceSyntax {
+    let data = SyntaxData(raw: .node(.objcNamePiece, [
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missingToken(.period),
+    ], .present))
+    return ObjcNamePieceSyntax(root: data, data: data)
+  }
+  public static func makeObjcName(
+    _ elements: [ObjcNamePieceSyntax]) -> ObjcNameSyntax {
+    let data = SyntaxData(raw: .node(.objcName,
+                                     elements.map { $0.data.raw }, .present))
+    return ObjcNameSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankObjcName() -> ObjcNameSyntax {
+    let data = SyntaxData(raw: .node(.objcName, [
+    ], .present))
+    return ObjcNameSyntax(root: data, data: data)
+  }
+  public static func makeObjcKeyPathExpr(keyPath: TokenSyntax, leftParen: TokenSyntax, name: ObjcNameSyntax, rightParen: TokenSyntax) -> ObjcKeyPathExprSyntax {
+    let data = SyntaxData(raw: .node(.objcKeyPathExpr, [
+      keyPath.data.raw,
+      leftParen.data.raw,
+      name.data.raw,
+      rightParen.data.raw,
+    ], .present))
+    return ObjcKeyPathExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankObjcKeyPathExpr() -> ObjcKeyPathExprSyntax {
+    let data = SyntaxData(raw: .node(.objcKeyPathExpr, [
+      RawSyntax.missingToken(.poundKeyPathKeyword),
+      RawSyntax.missingToken(.leftParen),
+      RawSyntax.missing(.objcName),
+      RawSyntax.missingToken(.rightParen),
+    ], .present))
+    return ObjcKeyPathExprSyntax(root: data, data: data)
+  }
+  public static func makeEditorPlaceholderExpr(identifier: TokenSyntax) -> EditorPlaceholderExprSyntax {
+    let data = SyntaxData(raw: .node(.editorPlaceholderExpr, [
+      identifier.data.raw,
+    ], .present))
+    return EditorPlaceholderExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankEditorPlaceholderExpr() -> EditorPlaceholderExprSyntax {
+    let data = SyntaxData(raw: .node(.editorPlaceholderExpr, [
+      RawSyntax.missingToken(.identifier("")),
+    ], .present))
+    return EditorPlaceholderExprSyntax(root: data, data: data)
+  }
+  public static func makeObjectLiteralExpr(identifier: TokenSyntax, leftParen: TokenSyntax, arguments: FunctionCallArgumentListSyntax, rightParen: TokenSyntax) -> ObjectLiteralExprSyntax {
+    let data = SyntaxData(raw: .node(.objectLiteralExpr, [
+      identifier.data.raw,
+      leftParen.data.raw,
+      arguments.data.raw,
+      rightParen.data.raw,
+    ], .present))
+    return ObjectLiteralExprSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankObjectLiteralExpr() -> ObjectLiteralExprSyntax {
+    let data = SyntaxData(raw: .node(.objectLiteralExpr, [
+      RawSyntax.missingToken(.poundColorLiteralKeyword),
+      RawSyntax.missingToken(.leftParen),
+      RawSyntax.missing(.functionCallArgumentList),
+      RawSyntax.missingToken(.rightParen),
+    ], .present))
+    return ObjectLiteralExprSyntax(root: data, data: data)
+  }
+  public static func makeTypeInitializerClause(equal: TokenSyntax, value: TypeSyntax) -> TypeInitializerClauseSyntax {
+    let data = SyntaxData(raw: .node(.typeInitializerClause, [
+      equal.data.raw,
+      value.data.raw,
+    ], .present))
+    return TypeInitializerClauseSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankTypeInitializerClause() -> TypeInitializerClauseSyntax {
+    let data = SyntaxData(raw: .node(.typeInitializerClause, [
+      RawSyntax.missingToken(.equal),
+      RawSyntax.missing(.type),
+    ], .present))
+    return TypeInitializerClauseSyntax(root: data, data: data)
+  }
+  public static func makeTypealiasDecl(attributes: AttributeListSyntax?, accessLevelModifier: DeclModifierSyntax?, typealiasKeyword: TokenSyntax, identifier: TokenSyntax, genericParameterClause: GenericParameterClauseSyntax?, initializer: TypeInitializerClauseSyntax?, genericWhereClause: GenericWhereClauseSyntax?) -> TypealiasDeclSyntax {
     let data = SyntaxData(raw: .node(.typealiasDecl, [
       attributes?.data.raw ?? RawSyntax.missing(.attributeList),
-      accessLevelModifier?.data.raw ?? RawSyntax.missing(.accessLevelModifier),
+      accessLevelModifier?.data.raw ?? RawSyntax.missing(.declModifier),
       typealiasKeyword.data.raw,
       identifier.data.raw,
       genericParameterClause?.data.raw ?? RawSyntax.missing(.genericParameterClause),
-      equals.data.raw,
-      type.data.raw,
+      initializer?.data.raw ?? RawSyntax.missing(.typeInitializerClause),
+      genericWhereClause?.data.raw ?? RawSyntax.missing(.genericWhereClause),
     ], .present))
     return TypealiasDeclSyntax(root: data, data: data)
   }
@@ -321,14 +1169,39 @@ public enum SyntaxFactory {
   public static func makeBlankTypealiasDecl() -> TypealiasDeclSyntax {
     let data = SyntaxData(raw: .node(.typealiasDecl, [
       RawSyntax.missing(.attributeList),
-      RawSyntax.missing(.accessLevelModifier),
+      RawSyntax.missing(.declModifier),
       RawSyntax.missingToken(.typealiasKeyword),
       RawSyntax.missingToken(.identifier("")),
       RawSyntax.missing(.genericParameterClause),
-      RawSyntax.missingToken(.equal),
-      RawSyntax.missing(.type),
+      RawSyntax.missing(.typeInitializerClause),
+      RawSyntax.missing(.genericWhereClause),
     ], .present))
     return TypealiasDeclSyntax(root: data, data: data)
+  }
+  public static func makeAssociatedtypeDecl(attributes: AttributeListSyntax?, accessLevelModifier: DeclModifierSyntax?, associatedtypeKeyword: TokenSyntax, identifier: TokenSyntax, inheritanceClause: TypeInheritanceClauseSyntax?, initializer: TypeInitializerClauseSyntax?, genericWhereClause: GenericWhereClauseSyntax?) -> AssociatedtypeDeclSyntax {
+    let data = SyntaxData(raw: .node(.associatedtypeDecl, [
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      accessLevelModifier?.data.raw ?? RawSyntax.missing(.declModifier),
+      associatedtypeKeyword.data.raw,
+      identifier.data.raw,
+      inheritanceClause?.data.raw ?? RawSyntax.missing(.typeInheritanceClause),
+      initializer?.data.raw ?? RawSyntax.missing(.typeInitializerClause),
+      genericWhereClause?.data.raw ?? RawSyntax.missing(.genericWhereClause),
+    ], .present))
+    return AssociatedtypeDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankAssociatedtypeDecl() -> AssociatedtypeDeclSyntax {
+    let data = SyntaxData(raw: .node(.associatedtypeDecl, [
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missing(.declModifier),
+      RawSyntax.missingToken(.associatedtypeKeyword),
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missing(.typeInheritanceClause),
+      RawSyntax.missing(.typeInitializerClause),
+      RawSyntax.missing(.genericWhereClause),
+    ], .present))
+    return AssociatedtypeDeclSyntax(root: data, data: data)
   }
   public static func makeFunctionParameterList(
     _ elements: [FunctionParameterSyntax]) -> FunctionParameterListSyntax {
@@ -342,36 +1215,60 @@ public enum SyntaxFactory {
     ], .present))
     return FunctionParameterListSyntax(root: data, data: data)
   }
-  public static func makeFunctionSignature(leftParen: TokenSyntax, parameterList: FunctionParameterListSyntax, rightParen: TokenSyntax, throwsOrRethrowsKeyword: TokenSyntax?, arrow: TokenSyntax?, returnTypeAttributes: AttributeListSyntax?, returnType: TypeSyntax?) -> FunctionSignatureSyntax {
-    let data = SyntaxData(raw: .node(.functionSignature, [
+  public static func makeParameterClause(leftParen: TokenSyntax, parameterList: FunctionParameterListSyntax, rightParen: TokenSyntax) -> ParameterClauseSyntax {
+    let data = SyntaxData(raw: .node(.parameterClause, [
       leftParen.data.raw,
       parameterList.data.raw,
       rightParen.data.raw,
+    ], .present))
+    return ParameterClauseSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankParameterClause() -> ParameterClauseSyntax {
+    let data = SyntaxData(raw: .node(.parameterClause, [
+      RawSyntax.missingToken(.leftParen),
+      RawSyntax.missing(.functionParameterList),
+      RawSyntax.missingToken(.rightParen),
+    ], .present))
+    return ParameterClauseSyntax(root: data, data: data)
+  }
+  public static func makeReturnClause(arrow: TokenSyntax, returnType: TypeSyntax) -> ReturnClauseSyntax {
+    let data = SyntaxData(raw: .node(.returnClause, [
+      arrow.data.raw,
+      returnType.data.raw,
+    ], .present))
+    return ReturnClauseSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankReturnClause() -> ReturnClauseSyntax {
+    let data = SyntaxData(raw: .node(.returnClause, [
+      RawSyntax.missingToken(.arrow),
+      RawSyntax.missing(.type),
+    ], .present))
+    return ReturnClauseSyntax(root: data, data: data)
+  }
+  public static func makeFunctionSignature(input: ParameterClauseSyntax, throwsOrRethrowsKeyword: TokenSyntax?, output: ReturnClauseSyntax?) -> FunctionSignatureSyntax {
+    let data = SyntaxData(raw: .node(.functionSignature, [
+      input.data.raw,
       throwsOrRethrowsKeyword?.data.raw ?? RawSyntax.missingToken(.throwsKeyword),
-      arrow?.data.raw ?? RawSyntax.missingToken(.arrow),
-      returnTypeAttributes?.data.raw ?? RawSyntax.missing(.attributeList),
-      returnType?.data.raw ?? RawSyntax.missing(.type),
+      output?.data.raw ?? RawSyntax.missing(.returnClause),
     ], .present))
     return FunctionSignatureSyntax(root: data, data: data)
   }
 
   public static func makeBlankFunctionSignature() -> FunctionSignatureSyntax {
     let data = SyntaxData(raw: .node(.functionSignature, [
-      RawSyntax.missingToken(.leftParen),
-      RawSyntax.missing(.functionParameterList),
-      RawSyntax.missingToken(.rightParen),
+      RawSyntax.missing(.parameterClause),
       RawSyntax.missingToken(.throwsKeyword),
-      RawSyntax.missingToken(.arrow),
-      RawSyntax.missing(.attributeList),
-      RawSyntax.missing(.type),
+      RawSyntax.missing(.returnClause),
     ], .present))
     return FunctionSignatureSyntax(root: data, data: data)
   }
-  public static func makeElseifDirectiveClause(poundElseif: TokenSyntax, condition: ExprSyntax, body: StmtListSyntax) -> ElseifDirectiveClauseSyntax {
+  public static func makeElseifDirectiveClause(poundElseif: TokenSyntax, condition: ExprSyntax, statements: CodeBlockItemListSyntax) -> ElseifDirectiveClauseSyntax {
     let data = SyntaxData(raw: .node(.elseifDirectiveClause, [
       poundElseif.data.raw,
       condition.data.raw,
-      body.data.raw,
+      statements.data.raw,
     ], .present))
     return ElseifDirectiveClauseSyntax(root: data, data: data)
   }
@@ -380,16 +1277,16 @@ public enum SyntaxFactory {
     let data = SyntaxData(raw: .node(.elseifDirectiveClause, [
       RawSyntax.missingToken(.poundElseifKeyword),
       RawSyntax.missing(.expr),
-      RawSyntax.missing(.stmtList),
+      RawSyntax.missing(.codeBlockItemList),
     ], .present))
     return ElseifDirectiveClauseSyntax(root: data, data: data)
   }
-  public static func makeIfConfigDecl(poundIf: TokenSyntax, condition: ExprSyntax, body: StmtListSyntax, elseifDirectiveClauses: ElseifDirectiveClauseListSyntax, elseClause: ElseDirectiveClauseSyntax?, poundEndif: TokenSyntax) -> IfConfigDeclSyntax {
+  public static func makeIfConfigDecl(poundIf: TokenSyntax, condition: ExprSyntax, statements: CodeBlockItemListSyntax, elseifDirectiveClauses: ElseifDirectiveClauseListSyntax?, elseClause: ElseDirectiveClauseSyntax?, poundEndif: TokenSyntax) -> IfConfigDeclSyntax {
     let data = SyntaxData(raw: .node(.ifConfigDecl, [
       poundIf.data.raw,
       condition.data.raw,
-      body.data.raw,
-      elseifDirectiveClauses.data.raw,
+      statements.data.raw,
+      elseifDirectiveClauses?.data.raw ?? RawSyntax.missing(.elseifDirectiveClauseList),
       elseClause?.data.raw ?? RawSyntax.missing(.elseDirectiveClause),
       poundEndif.data.raw,
     ], .present))
@@ -400,48 +1297,97 @@ public enum SyntaxFactory {
     let data = SyntaxData(raw: .node(.ifConfigDecl, [
       RawSyntax.missingToken(.poundIfKeyword),
       RawSyntax.missing(.expr),
-      RawSyntax.missing(.stmtList),
+      RawSyntax.missing(.codeBlockItemList),
       RawSyntax.missing(.elseifDirectiveClauseList),
       RawSyntax.missing(.elseDirectiveClause),
       RawSyntax.missingToken(.poundEndifKeyword),
     ], .present))
     return IfConfigDeclSyntax(root: data, data: data)
   }
-  public static func makeStructMembers(
-    _ elements: [DeclSyntax]) -> StructMembersSyntax {
-    let data = SyntaxData(raw: .node(.structMembers,
-                                     elements.map { $0.data.raw }, .present))
-    return StructMembersSyntax(root: data, data: data)
+  public static func makePoundErrorDecl(poundError: TokenSyntax, leftParen: TokenSyntax, message: StringLiteralExprSyntax, rightParen: TokenSyntax) -> PoundErrorDeclSyntax {
+    let data = SyntaxData(raw: .node(.poundErrorDecl, [
+      poundError.data.raw,
+      leftParen.data.raw,
+      message.data.raw,
+      rightParen.data.raw,
+    ], .present))
+    return PoundErrorDeclSyntax(root: data, data: data)
   }
 
-  public static func makeBlankStructMembers() -> StructMembersSyntax {
-    let data = SyntaxData(raw: .node(.structMembers, [
+  public static func makeBlankPoundErrorDecl() -> PoundErrorDeclSyntax {
+    let data = SyntaxData(raw: .node(.poundErrorDecl, [
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missingToken(.leftParen),
+      RawSyntax.missing(.stringLiteralExpr),
+      RawSyntax.missingToken(.rightParen),
     ], .present))
-    return StructMembersSyntax(root: data, data: data)
+    return PoundErrorDeclSyntax(root: data, data: data)
   }
-  public static func makeDeclModifier(name: TokenSyntax, leftParen: TokenSyntax?, argument: TokenSyntax?, rightParen: TokenSyntax?) -> DeclModifierSyntax {
+  public static func makePoundWarningDecl(poundWarning: TokenSyntax, leftParen: TokenSyntax, message: StringLiteralExprSyntax, rightParen: TokenSyntax) -> PoundWarningDeclSyntax {
+    let data = SyntaxData(raw: .node(.poundWarningDecl, [
+      poundWarning.data.raw,
+      leftParen.data.raw,
+      message.data.raw,
+      rightParen.data.raw,
+    ], .present))
+    return PoundWarningDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankPoundWarningDecl() -> PoundWarningDeclSyntax {
+    let data = SyntaxData(raw: .node(.poundWarningDecl, [
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missingToken(.leftParen),
+      RawSyntax.missing(.stringLiteralExpr),
+      RawSyntax.missingToken(.rightParen),
+    ], .present))
+    return PoundWarningDeclSyntax(root: data, data: data)
+  }
+  public static func makeDeclModifier(name: TokenSyntax, detail: TokenListSyntax?) -> DeclModifierSyntax {
     let data = SyntaxData(raw: .node(.declModifier, [
       name.data.raw,
-      leftParen?.data.raw ?? RawSyntax.missingToken(.leftParen),
-      argument?.data.raw ?? RawSyntax.missingToken(.identifier("")),
-      rightParen?.data.raw ?? RawSyntax.missingToken(.rightParen),
+      detail?.data.raw ?? RawSyntax.missingToken(.unknown("")),
     ], .present))
     return DeclModifierSyntax(root: data, data: data)
   }
 
   public static func makeBlankDeclModifier() -> DeclModifierSyntax {
     let data = SyntaxData(raw: .node(.declModifier, [
-      RawSyntax.missingToken(.unknown),
-      RawSyntax.missingToken(.leftParen),
-      RawSyntax.missingToken(.identifier("")),
-      RawSyntax.missingToken(.rightParen),
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missingToken(.unknown("")),
     ], .present))
     return DeclModifierSyntax(root: data, data: data)
   }
-  public static func makeTypeInheritanceClause(colon: TokenSyntax, inheritedType: TypeSyntax) -> TypeInheritanceClauseSyntax {
+  public static func makeInheritedType(typeName: TypeSyntax, trailingComma: TokenSyntax?) -> InheritedTypeSyntax {
+    let data = SyntaxData(raw: .node(.inheritedType, [
+      typeName.data.raw,
+      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
+    ], .present))
+    return InheritedTypeSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankInheritedType() -> InheritedTypeSyntax {
+    let data = SyntaxData(raw: .node(.inheritedType, [
+      RawSyntax.missing(.type),
+      RawSyntax.missingToken(.comma),
+    ], .present))
+    return InheritedTypeSyntax(root: data, data: data)
+  }
+  public static func makeInheritedTypeList(
+    _ elements: [InheritedTypeSyntax]) -> InheritedTypeListSyntax {
+    let data = SyntaxData(raw: .node(.inheritedTypeList,
+                                     elements.map { $0.data.raw }, .present))
+    return InheritedTypeListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankInheritedTypeList() -> InheritedTypeListSyntax {
+    let data = SyntaxData(raw: .node(.inheritedTypeList, [
+    ], .present))
+    return InheritedTypeListSyntax(root: data, data: data)
+  }
+  public static func makeTypeInheritanceClause(colon: TokenSyntax, inheritedTypeCollection: InheritedTypeListSyntax) -> TypeInheritanceClauseSyntax {
     let data = SyntaxData(raw: .node(.typeInheritanceClause, [
       colon.data.raw,
-      inheritedType.data.raw,
+      inheritedTypeCollection.data.raw,
     ], .present))
     return TypeInheritanceClauseSyntax(root: data, data: data)
   }
@@ -449,22 +1395,47 @@ public enum SyntaxFactory {
   public static func makeBlankTypeInheritanceClause() -> TypeInheritanceClauseSyntax {
     let data = SyntaxData(raw: .node(.typeInheritanceClause, [
       RawSyntax.missingToken(.colon),
-      RawSyntax.missing(.type),
+      RawSyntax.missing(.inheritedTypeList),
     ], .present))
     return TypeInheritanceClauseSyntax(root: data, data: data)
   }
-  public static func makeStructDecl(attributes: AttributeListSyntax?, accessLevelModifier: AccessLevelModifierSyntax?, structKeyword: TokenSyntax, identifier: TokenSyntax, genericParameterClause: GenericParameterClauseSyntax?, inheritanceClause: TypeInheritanceClauseSyntax?, genericWhereClause: GenericWhereClauseSyntax?, leftBrace: TokenSyntax, members: StructMembersSyntax, rightBrace: TokenSyntax) -> StructDeclSyntax {
+  public static func makeClassDecl(attributes: AttributeListSyntax?, accessLevelModifier: DeclModifierSyntax?, classKeyword: TokenSyntax, identifier: TokenSyntax, genericParameterClause: GenericParameterClauseSyntax?, inheritanceClause: TypeInheritanceClauseSyntax?, genericWhereClause: GenericWhereClauseSyntax?, members: MemberDeclBlockSyntax) -> ClassDeclSyntax {
+    let data = SyntaxData(raw: .node(.classDecl, [
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      accessLevelModifier?.data.raw ?? RawSyntax.missing(.declModifier),
+      classKeyword.data.raw,
+      identifier.data.raw,
+      genericParameterClause?.data.raw ?? RawSyntax.missing(.genericParameterClause),
+      inheritanceClause?.data.raw ?? RawSyntax.missing(.typeInheritanceClause),
+      genericWhereClause?.data.raw ?? RawSyntax.missing(.genericWhereClause),
+      members.data.raw,
+    ], .present))
+    return ClassDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankClassDecl() -> ClassDeclSyntax {
+    let data = SyntaxData(raw: .node(.classDecl, [
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missing(.declModifier),
+      RawSyntax.missingToken(.classKeyword),
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missing(.genericParameterClause),
+      RawSyntax.missing(.typeInheritanceClause),
+      RawSyntax.missing(.genericWhereClause),
+      RawSyntax.missing(.memberDeclBlock),
+    ], .present))
+    return ClassDeclSyntax(root: data, data: data)
+  }
+  public static func makeStructDecl(attributes: AttributeListSyntax?, accessLevelModifier: DeclModifierSyntax?, structKeyword: TokenSyntax, identifier: TokenSyntax, genericParameterClause: GenericParameterClauseSyntax?, inheritanceClause: TypeInheritanceClauseSyntax?, genericWhereClause: GenericWhereClauseSyntax?, members: MemberDeclBlockSyntax) -> StructDeclSyntax {
     let data = SyntaxData(raw: .node(.structDecl, [
       attributes?.data.raw ?? RawSyntax.missing(.attributeList),
-      accessLevelModifier?.data.raw ?? RawSyntax.missing(.accessLevelModifier),
+      accessLevelModifier?.data.raw ?? RawSyntax.missing(.declModifier),
       structKeyword.data.raw,
       identifier.data.raw,
       genericParameterClause?.data.raw ?? RawSyntax.missing(.genericParameterClause),
       inheritanceClause?.data.raw ?? RawSyntax.missing(.typeInheritanceClause),
       genericWhereClause?.data.raw ?? RawSyntax.missing(.genericWhereClause),
-      leftBrace.data.raw,
       members.data.raw,
-      rightBrace.data.raw,
     ], .present))
     return StructDeclSyntax(root: data, data: data)
   }
@@ -472,17 +1443,82 @@ public enum SyntaxFactory {
   public static func makeBlankStructDecl() -> StructDeclSyntax {
     let data = SyntaxData(raw: .node(.structDecl, [
       RawSyntax.missing(.attributeList),
-      RawSyntax.missing(.accessLevelModifier),
+      RawSyntax.missing(.declModifier),
       RawSyntax.missingToken(.structKeyword),
       RawSyntax.missingToken(.identifier("")),
       RawSyntax.missing(.genericParameterClause),
       RawSyntax.missing(.typeInheritanceClause),
       RawSyntax.missing(.genericWhereClause),
-      RawSyntax.missingToken(.leftBrace),
-      RawSyntax.missing(.structMembers),
-      RawSyntax.missingToken(.rightBrace),
+      RawSyntax.missing(.memberDeclBlock),
     ], .present))
     return StructDeclSyntax(root: data, data: data)
+  }
+  public static func makeProtocolDecl(attributes: AttributeListSyntax?, accessLevelModifier: DeclModifierSyntax?, protocolKeyword: TokenSyntax, identifier: TokenSyntax, inheritanceClause: TypeInheritanceClauseSyntax?, genericWhereClause: GenericWhereClauseSyntax?, members: MemberDeclBlockSyntax) -> ProtocolDeclSyntax {
+    let data = SyntaxData(raw: .node(.protocolDecl, [
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      accessLevelModifier?.data.raw ?? RawSyntax.missing(.declModifier),
+      protocolKeyword.data.raw,
+      identifier.data.raw,
+      inheritanceClause?.data.raw ?? RawSyntax.missing(.typeInheritanceClause),
+      genericWhereClause?.data.raw ?? RawSyntax.missing(.genericWhereClause),
+      members.data.raw,
+    ], .present))
+    return ProtocolDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankProtocolDecl() -> ProtocolDeclSyntax {
+    let data = SyntaxData(raw: .node(.protocolDecl, [
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missing(.declModifier),
+      RawSyntax.missingToken(.protocolKeyword),
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missing(.typeInheritanceClause),
+      RawSyntax.missing(.genericWhereClause),
+      RawSyntax.missing(.memberDeclBlock),
+    ], .present))
+    return ProtocolDeclSyntax(root: data, data: data)
+  }
+  public static func makeExtensionDecl(attributes: AttributeListSyntax?, accessLevelModifier: DeclModifierSyntax?, extensionKeyword: TokenSyntax, extendedType: TypeSyntax, inheritanceClause: TypeInheritanceClauseSyntax?, genericWhereClause: GenericWhereClauseSyntax?, members: MemberDeclBlockSyntax) -> ExtensionDeclSyntax {
+    let data = SyntaxData(raw: .node(.extensionDecl, [
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      accessLevelModifier?.data.raw ?? RawSyntax.missing(.declModifier),
+      extensionKeyword.data.raw,
+      extendedType.data.raw,
+      inheritanceClause?.data.raw ?? RawSyntax.missing(.typeInheritanceClause),
+      genericWhereClause?.data.raw ?? RawSyntax.missing(.genericWhereClause),
+      members.data.raw,
+    ], .present))
+    return ExtensionDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankExtensionDecl() -> ExtensionDeclSyntax {
+    let data = SyntaxData(raw: .node(.extensionDecl, [
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missing(.declModifier),
+      RawSyntax.missingToken(.extensionKeyword),
+      RawSyntax.missing(.type),
+      RawSyntax.missing(.typeInheritanceClause),
+      RawSyntax.missing(.genericWhereClause),
+      RawSyntax.missing(.memberDeclBlock),
+    ], .present))
+    return ExtensionDeclSyntax(root: data, data: data)
+  }
+  public static func makeMemberDeclBlock(leftBrace: TokenSyntax, members: DeclListSyntax, rightBrace: TokenSyntax) -> MemberDeclBlockSyntax {
+    let data = SyntaxData(raw: .node(.memberDeclBlock, [
+      leftBrace.data.raw,
+      members.data.raw,
+      rightBrace.data.raw,
+    ], .present))
+    return MemberDeclBlockSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankMemberDeclBlock() -> MemberDeclBlockSyntax {
+    let data = SyntaxData(raw: .node(.memberDeclBlock, [
+      RawSyntax.missingToken(.leftBrace),
+      RawSyntax.missing(.declList),
+      RawSyntax.missingToken(.rightBrace),
+    ], .present))
+    return MemberDeclBlockSyntax(root: data, data: data)
   }
   public static func makeDeclList(
     _ elements: [DeclSyntax]) -> DeclListSyntax {
@@ -496,9 +1532,9 @@ public enum SyntaxFactory {
     ], .present))
     return DeclListSyntax(root: data, data: data)
   }
-  public static func makeSourceFile(topLevelDecls: DeclListSyntax, eofToken: TokenSyntax) -> SourceFileSyntax {
+  public static func makeSourceFile(statements: CodeBlockItemListSyntax, eofToken: TokenSyntax) -> SourceFileSyntax {
     let data = SyntaxData(raw: .node(.sourceFile, [
-      topLevelDecls.data.raw,
+      statements.data.raw,
       eofToken.data.raw,
     ], .present))
     return SourceFileSyntax(root: data, data: data)
@@ -506,33 +1542,35 @@ public enum SyntaxFactory {
 
   public static func makeBlankSourceFile() -> SourceFileSyntax {
     let data = SyntaxData(raw: .node(.sourceFile, [
-      RawSyntax.missing(.declList),
-      RawSyntax.missingToken(.unknown),
+      RawSyntax.missing(.codeBlockItemList),
+      RawSyntax.missingToken(.unknown("")),
     ], .present))
     return SourceFileSyntax(root: data, data: data)
   }
-  public static func makeTopLevelCodeDecl(body: StmtListSyntax) -> TopLevelCodeDeclSyntax {
-    let data = SyntaxData(raw: .node(.topLevelCodeDecl, [
-      body.data.raw,
+  public static func makeInitializerClause(equal: TokenSyntax, value: ExprSyntax) -> InitializerClauseSyntax {
+    let data = SyntaxData(raw: .node(.initializerClause, [
+      equal.data.raw,
+      value.data.raw,
     ], .present))
-    return TopLevelCodeDeclSyntax(root: data, data: data)
+    return InitializerClauseSyntax(root: data, data: data)
   }
 
-  public static func makeBlankTopLevelCodeDecl() -> TopLevelCodeDeclSyntax {
-    let data = SyntaxData(raw: .node(.topLevelCodeDecl, [
-      RawSyntax.missing(.stmtList),
+  public static func makeBlankInitializerClause() -> InitializerClauseSyntax {
+    let data = SyntaxData(raw: .node(.initializerClause, [
+      RawSyntax.missingToken(.equal),
+      RawSyntax.missing(.expr),
     ], .present))
-    return TopLevelCodeDeclSyntax(root: data, data: data)
+    return InitializerClauseSyntax(root: data, data: data)
   }
-  public static func makeFunctionParameter(externalName: TokenSyntax?, localName: TokenSyntax, colon: TokenSyntax, typeAnnotation: TypeAnnotationSyntax, ellipsis: TokenSyntax?, defaultEquals: TokenSyntax?, defaultValue: ExprSyntax?, trailingComma: TokenSyntax?) -> FunctionParameterSyntax {
+  public static func makeFunctionParameter(attributes: AttributeListSyntax?, firstName: TokenSyntax, secondName: TokenSyntax?, colon: TokenSyntax, typeAnnotation: TypeSyntax, ellipsis: TokenSyntax?, defaultArgument: InitializerClauseSyntax?, trailingComma: TokenSyntax?) -> FunctionParameterSyntax {
     let data = SyntaxData(raw: .node(.functionParameter, [
-      externalName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
-      localName.data.raw,
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      firstName.data.raw,
+      secondName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
       colon.data.raw,
       typeAnnotation.data.raw,
-      ellipsis?.data.raw ?? RawSyntax.missingToken(.unknown),
-      defaultEquals?.data.raw ?? RawSyntax.missingToken(.equal),
-      defaultValue?.data.raw ?? RawSyntax.missing(.expr),
+      ellipsis?.data.raw ?? RawSyntax.missingToken(.unknown("")),
+      defaultArgument?.data.raw ?? RawSyntax.missing(.initializerClause),
       trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
     ], .present))
     return FunctionParameterSyntax(root: data, data: data)
@@ -540,13 +1578,13 @@ public enum SyntaxFactory {
 
   public static func makeBlankFunctionParameter() -> FunctionParameterSyntax {
     let data = SyntaxData(raw: .node(.functionParameter, [
+      RawSyntax.missing(.attributeList),
       RawSyntax.missingToken(.identifier("")),
       RawSyntax.missingToken(.identifier("")),
       RawSyntax.missingToken(.colon),
-      RawSyntax.missing(.typeAnnotation),
-      RawSyntax.missingToken(.unknown),
-      RawSyntax.missingToken(.equal),
-      RawSyntax.missing(.expr),
+      RawSyntax.missing(.type),
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missing(.initializerClause),
       RawSyntax.missingToken(.comma),
     ], .present))
     return FunctionParameterSyntax(root: data, data: data)
@@ -563,7 +1601,7 @@ public enum SyntaxFactory {
     ], .present))
     return ModifierListSyntax(root: data, data: data)
   }
-  public static func makeFunctionDecl(attributes: AttributeListSyntax?, modifiers: ModifierListSyntax?, funcKeyword: TokenSyntax, identifier: TokenSyntax, genericParameterClause: GenericParameterClauseSyntax?, signature: FunctionSignatureSyntax, genericWhereClause: GenericWhereClauseSyntax?, body: CodeBlockSyntax) -> FunctionDeclSyntax {
+  public static func makeFunctionDecl(attributes: AttributeListSyntax?, modifiers: ModifierListSyntax?, funcKeyword: TokenSyntax, identifier: TokenSyntax, genericParameterClause: GenericParameterClauseSyntax?, signature: FunctionSignatureSyntax, genericWhereClause: GenericWhereClauseSyntax?, body: CodeBlockSyntax?) -> FunctionDeclSyntax {
     let data = SyntaxData(raw: .node(.functionDecl, [
       attributes?.data.raw ?? RawSyntax.missing(.attributeList),
       modifiers?.data.raw ?? RawSyntax.missing(.modifierList),
@@ -572,7 +1610,7 @@ public enum SyntaxFactory {
       genericParameterClause?.data.raw ?? RawSyntax.missing(.genericParameterClause),
       signature.data.raw,
       genericWhereClause?.data.raw ?? RawSyntax.missing(.genericWhereClause),
-      body.data.raw,
+      body?.data.raw ?? RawSyntax.missing(.codeBlock),
     ], .present))
     return FunctionDeclSyntax(root: data, data: data)
   }
@@ -590,6 +1628,81 @@ public enum SyntaxFactory {
     ], .present))
     return FunctionDeclSyntax(root: data, data: data)
   }
+  public static func makeInitializerDecl(attributes: AttributeListSyntax?, modifiers: ModifierListSyntax?, initKeyword: TokenSyntax, optionalMark: TokenSyntax?, genericParameterClause: GenericParameterClauseSyntax?, parameters: ParameterClauseSyntax, throwsOrRethrowsKeyword: TokenSyntax?, genericWhereClause: GenericWhereClauseSyntax?, body: CodeBlockSyntax?) -> InitializerDeclSyntax {
+    let data = SyntaxData(raw: .node(.initializerDecl, [
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      modifiers?.data.raw ?? RawSyntax.missing(.modifierList),
+      initKeyword.data.raw,
+      optionalMark?.data.raw ?? RawSyntax.missingToken(.postfixQuestionMark),
+      genericParameterClause?.data.raw ?? RawSyntax.missing(.genericParameterClause),
+      parameters.data.raw,
+      throwsOrRethrowsKeyword?.data.raw ?? RawSyntax.missingToken(.throwsKeyword),
+      genericWhereClause?.data.raw ?? RawSyntax.missing(.genericWhereClause),
+      body?.data.raw ?? RawSyntax.missing(.codeBlock),
+    ], .present))
+    return InitializerDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankInitializerDecl() -> InitializerDeclSyntax {
+    let data = SyntaxData(raw: .node(.initializerDecl, [
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missing(.modifierList),
+      RawSyntax.missingToken(.initKeyword),
+      RawSyntax.missingToken(.postfixQuestionMark),
+      RawSyntax.missing(.genericParameterClause),
+      RawSyntax.missing(.parameterClause),
+      RawSyntax.missingToken(.throwsKeyword),
+      RawSyntax.missing(.genericWhereClause),
+      RawSyntax.missing(.codeBlock),
+    ], .present))
+    return InitializerDeclSyntax(root: data, data: data)
+  }
+  public static func makeDeinitializerDecl(attributes: AttributeListSyntax?, modifiers: ModifierListSyntax?, deinitKeyword: TokenSyntax, body: CodeBlockSyntax) -> DeinitializerDeclSyntax {
+    let data = SyntaxData(raw: .node(.deinitializerDecl, [
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      modifiers?.data.raw ?? RawSyntax.missing(.modifierList),
+      deinitKeyword.data.raw,
+      body.data.raw,
+    ], .present))
+    return DeinitializerDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankDeinitializerDecl() -> DeinitializerDeclSyntax {
+    let data = SyntaxData(raw: .node(.deinitializerDecl, [
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missing(.modifierList),
+      RawSyntax.missingToken(.deinitKeyword),
+      RawSyntax.missing(.codeBlock),
+    ], .present))
+    return DeinitializerDeclSyntax(root: data, data: data)
+  }
+  public static func makeSubscriptDecl(attributes: AttributeListSyntax?, modifiers: ModifierListSyntax?, subscriptKeyword: TokenSyntax, genericParameterClause: GenericParameterClauseSyntax?, indices: ParameterClauseSyntax, result: ReturnClauseSyntax, genericWhereClause: GenericWhereClauseSyntax?, accessor: AccessorBlockSyntax?) -> SubscriptDeclSyntax {
+    let data = SyntaxData(raw: .node(.subscriptDecl, [
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      modifiers?.data.raw ?? RawSyntax.missing(.modifierList),
+      subscriptKeyword.data.raw,
+      genericParameterClause?.data.raw ?? RawSyntax.missing(.genericParameterClause),
+      indices.data.raw,
+      result.data.raw,
+      genericWhereClause?.data.raw ?? RawSyntax.missing(.genericWhereClause),
+      accessor?.data.raw ?? RawSyntax.missing(.accessorBlock),
+    ], .present))
+    return SubscriptDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankSubscriptDecl() -> SubscriptDeclSyntax {
+    let data = SyntaxData(raw: .node(.subscriptDecl, [
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missing(.modifierList),
+      RawSyntax.missingToken(.subscriptKeyword),
+      RawSyntax.missing(.genericParameterClause),
+      RawSyntax.missing(.parameterClause),
+      RawSyntax.missing(.returnClause),
+      RawSyntax.missing(.genericWhereClause),
+      RawSyntax.missing(.accessorBlock),
+    ], .present))
+    return SubscriptDeclSyntax(root: data, data: data)
+  }
   public static func makeElseifDirectiveClauseList(
     _ elements: [ElseifDirectiveClauseSyntax]) -> ElseifDirectiveClauseListSyntax {
     let data = SyntaxData(raw: .node(.elseifDirectiveClauseList,
@@ -602,10 +1715,10 @@ public enum SyntaxFactory {
     ], .present))
     return ElseifDirectiveClauseListSyntax(root: data, data: data)
   }
-  public static func makeElseDirectiveClause(poundElse: TokenSyntax, body: StmtListSyntax) -> ElseDirectiveClauseSyntax {
+  public static func makeElseDirectiveClause(poundElse: TokenSyntax, statements: CodeBlockItemListSyntax) -> ElseDirectiveClauseSyntax {
     let data = SyntaxData(raw: .node(.elseDirectiveClause, [
       poundElse.data.raw,
-      body.data.raw,
+      statements.data.raw,
     ], .present))
     return ElseDirectiveClauseSyntax(root: data, data: data)
   }
@@ -613,16 +1726,16 @@ public enum SyntaxFactory {
   public static func makeBlankElseDirectiveClause() -> ElseDirectiveClauseSyntax {
     let data = SyntaxData(raw: .node(.elseDirectiveClause, [
       RawSyntax.missingToken(.poundElseKeyword),
-      RawSyntax.missing(.stmtList),
+      RawSyntax.missing(.codeBlockItemList),
     ], .present))
     return ElseDirectiveClauseSyntax(root: data, data: data)
   }
-  public static func makeAccessLevelModifier(name: TokenSyntax, openParen: TokenSyntax?, modifier: TokenSyntax?, closeParen: TokenSyntax?) -> AccessLevelModifierSyntax {
+  public static func makeAccessLevelModifier(name: TokenSyntax, leftParen: TokenSyntax?, modifier: TokenSyntax?, rightParen: TokenSyntax?) -> AccessLevelModifierSyntax {
     let data = SyntaxData(raw: .node(.accessLevelModifier, [
       name.data.raw,
-      openParen?.data.raw ?? RawSyntax.missingToken(.leftParen),
+      leftParen?.data.raw ?? RawSyntax.missingToken(.leftParen),
       modifier?.data.raw ?? RawSyntax.missingToken(.identifier("")),
-      closeParen?.data.raw ?? RawSyntax.missingToken(.rightParen),
+      rightParen?.data.raw ?? RawSyntax.missingToken(.rightParen),
     ], .present))
     return AccessLevelModifierSyntax(root: data, data: data)
   }
@@ -636,6 +1749,250 @@ public enum SyntaxFactory {
     ], .present))
     return AccessLevelModifierSyntax(root: data, data: data)
   }
+  public static func makeAccessPathComponent(name: TokenSyntax, trailingDot: TokenSyntax?) -> AccessPathComponentSyntax {
+    let data = SyntaxData(raw: .node(.accessPathComponent, [
+      name.data.raw,
+      trailingDot?.data.raw ?? RawSyntax.missingToken(.period),
+    ], .present))
+    return AccessPathComponentSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankAccessPathComponent() -> AccessPathComponentSyntax {
+    let data = SyntaxData(raw: .node(.accessPathComponent, [
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missingToken(.period),
+    ], .present))
+    return AccessPathComponentSyntax(root: data, data: data)
+  }
+  public static func makeAccessPath(
+    _ elements: [AccessPathComponentSyntax]) -> AccessPathSyntax {
+    let data = SyntaxData(raw: .node(.accessPath,
+                                     elements.map { $0.data.raw }, .present))
+    return AccessPathSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankAccessPath() -> AccessPathSyntax {
+    let data = SyntaxData(raw: .node(.accessPath, [
+    ], .present))
+    return AccessPathSyntax(root: data, data: data)
+  }
+  public static func makeImportDecl(attributes: AttributeListSyntax?, importTok: TokenSyntax, importKind: TokenSyntax?, path: AccessPathSyntax) -> ImportDeclSyntax {
+    let data = SyntaxData(raw: .node(.importDecl, [
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      importTok.data.raw,
+      importKind?.data.raw ?? RawSyntax.missingToken(.typealiasKeyword),
+      path.data.raw,
+    ], .present))
+    return ImportDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankImportDecl() -> ImportDeclSyntax {
+    let data = SyntaxData(raw: .node(.importDecl, [
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missingToken(.importKeyword),
+      RawSyntax.missingToken(.typealiasKeyword),
+      RawSyntax.missing(.accessPath),
+    ], .present))
+    return ImportDeclSyntax(root: data, data: data)
+  }
+  public static func makeAccessorParameter(leftParen: TokenSyntax, name: TokenSyntax, rightParen: TokenSyntax) -> AccessorParameterSyntax {
+    let data = SyntaxData(raw: .node(.accessorParameter, [
+      leftParen.data.raw,
+      name.data.raw,
+      rightParen.data.raw,
+    ], .present))
+    return AccessorParameterSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankAccessorParameter() -> AccessorParameterSyntax {
+    let data = SyntaxData(raw: .node(.accessorParameter, [
+      RawSyntax.missingToken(.leftParen),
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missingToken(.rightParen),
+    ], .present))
+    return AccessorParameterSyntax(root: data, data: data)
+  }
+  public static func makeAccessorDecl(attributes: AttributeListSyntax?, modifier: DeclModifierSyntax?, accessorKind: TokenSyntax, parameter: AccessorParameterSyntax?, body: CodeBlockSyntax?) -> AccessorDeclSyntax {
+    let data = SyntaxData(raw: .node(.accessorDecl, [
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      modifier?.data.raw ?? RawSyntax.missing(.declModifier),
+      accessorKind.data.raw,
+      parameter?.data.raw ?? RawSyntax.missing(.accessorParameter),
+      body?.data.raw ?? RawSyntax.missing(.codeBlock),
+    ], .present))
+    return AccessorDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankAccessorDecl() -> AccessorDeclSyntax {
+    let data = SyntaxData(raw: .node(.accessorDecl, [
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missing(.declModifier),
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missing(.accessorParameter),
+      RawSyntax.missing(.codeBlock),
+    ], .present))
+    return AccessorDeclSyntax(root: data, data: data)
+  }
+  public static func makeAccessorList(
+    _ elements: [AccessorDeclSyntax]) -> AccessorListSyntax {
+    let data = SyntaxData(raw: .node(.accessorList,
+                                     elements.map { $0.data.raw }, .present))
+    return AccessorListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankAccessorList() -> AccessorListSyntax {
+    let data = SyntaxData(raw: .node(.accessorList, [
+    ], .present))
+    return AccessorListSyntax(root: data, data: data)
+  }
+  public static func makeAccessorBlock(leftBrace: TokenSyntax, accessorListOrStmtList: Syntax, rightBrace: TokenSyntax) -> AccessorBlockSyntax {
+    let data = SyntaxData(raw: .node(.accessorBlock, [
+      leftBrace.data.raw,
+      accessorListOrStmtList.data.raw,
+      rightBrace.data.raw,
+    ], .present))
+    return AccessorBlockSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankAccessorBlock() -> AccessorBlockSyntax {
+    let data = SyntaxData(raw: .node(.accessorBlock, [
+      RawSyntax.missingToken(.leftBrace),
+      RawSyntax.missing(.unknown),
+      RawSyntax.missingToken(.rightBrace),
+    ], .present))
+    return AccessorBlockSyntax(root: data, data: data)
+  }
+  public static func makePatternBinding(pattern: PatternSyntax, typeAnnotation: TypeAnnotationSyntax?, initializer: InitializerClauseSyntax?, accessor: AccessorBlockSyntax?, trailingComma: TokenSyntax?) -> PatternBindingSyntax {
+    let data = SyntaxData(raw: .node(.patternBinding, [
+      pattern.data.raw,
+      typeAnnotation?.data.raw ?? RawSyntax.missing(.typeAnnotation),
+      initializer?.data.raw ?? RawSyntax.missing(.initializerClause),
+      accessor?.data.raw ?? RawSyntax.missing(.accessorBlock),
+      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
+    ], .present))
+    return PatternBindingSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankPatternBinding() -> PatternBindingSyntax {
+    let data = SyntaxData(raw: .node(.patternBinding, [
+      RawSyntax.missing(.pattern),
+      RawSyntax.missing(.typeAnnotation),
+      RawSyntax.missing(.initializerClause),
+      RawSyntax.missing(.accessorBlock),
+      RawSyntax.missingToken(.comma),
+    ], .present))
+    return PatternBindingSyntax(root: data, data: data)
+  }
+  public static func makePatternBindingList(
+    _ elements: [PatternBindingSyntax]) -> PatternBindingListSyntax {
+    let data = SyntaxData(raw: .node(.patternBindingList,
+                                     elements.map { $0.data.raw }, .present))
+    return PatternBindingListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankPatternBindingList() -> PatternBindingListSyntax {
+    let data = SyntaxData(raw: .node(.patternBindingList, [
+    ], .present))
+    return PatternBindingListSyntax(root: data, data: data)
+  }
+  public static func makeVariableDecl(attributes: AttributeListSyntax?, modifiers: ModifierListSyntax?, letOrVarKeyword: TokenSyntax, bindings: PatternBindingListSyntax) -> VariableDeclSyntax {
+    let data = SyntaxData(raw: .node(.variableDecl, [
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      modifiers?.data.raw ?? RawSyntax.missing(.modifierList),
+      letOrVarKeyword.data.raw,
+      bindings.data.raw,
+    ], .present))
+    return VariableDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankVariableDecl() -> VariableDeclSyntax {
+    let data = SyntaxData(raw: .node(.variableDecl, [
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missing(.modifierList),
+      RawSyntax.missingToken(.letKeyword),
+      RawSyntax.missing(.patternBindingList),
+    ], .present))
+    return VariableDeclSyntax(root: data, data: data)
+  }
+  public static func makeEnumCaseElement(identifier: TokenSyntax, associatedValue: TupleTypeSyntax?, equalsToken: TokenSyntax?, rawValue: ExprSyntax?, trailingComma: TokenSyntax?) -> EnumCaseElementSyntax {
+    let data = SyntaxData(raw: .node(.enumCaseElement, [
+      identifier.data.raw,
+      associatedValue?.data.raw ?? RawSyntax.missing(.tupleType),
+      equalsToken?.data.raw ?? RawSyntax.missingToken(.unknown("")),
+      rawValue?.data.raw ?? RawSyntax.missing(.expr),
+      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
+    ], .present))
+    return EnumCaseElementSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankEnumCaseElement() -> EnumCaseElementSyntax {
+    let data = SyntaxData(raw: .node(.enumCaseElement, [
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missing(.tupleType),
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missing(.expr),
+      RawSyntax.missingToken(.comma),
+    ], .present))
+    return EnumCaseElementSyntax(root: data, data: data)
+  }
+  public static func makeEnumCaseElementList(
+    _ elements: [EnumCaseElementSyntax]) -> EnumCaseElementListSyntax {
+    let data = SyntaxData(raw: .node(.enumCaseElementList,
+                                     elements.map { $0.data.raw }, .present))
+    return EnumCaseElementListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankEnumCaseElementList() -> EnumCaseElementListSyntax {
+    let data = SyntaxData(raw: .node(.enumCaseElementList, [
+    ], .present))
+    return EnumCaseElementListSyntax(root: data, data: data)
+  }
+  public static func makeEnumCaseDecl(indirectKeyword: TokenSyntax?, caseKeyword: TokenSyntax, elements: EnumCaseElementListSyntax) -> EnumCaseDeclSyntax {
+    let data = SyntaxData(raw: .node(.enumCaseDecl, [
+      indirectKeyword?.data.raw ?? RawSyntax.missingToken(.unknown("")),
+      caseKeyword.data.raw,
+      elements.data.raw,
+    ], .present))
+    return EnumCaseDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankEnumCaseDecl() -> EnumCaseDeclSyntax {
+    let data = SyntaxData(raw: .node(.enumCaseDecl, [
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missingToken(.caseKeyword),
+      RawSyntax.missing(.enumCaseElementList),
+    ], .present))
+    return EnumCaseDeclSyntax(root: data, data: data)
+  }
+  public static func makeEnumDecl(attributes: AttributeListSyntax?, modifiers: ModifierListSyntax?, indirectKeyword: TokenSyntax?, enumKeyword: TokenSyntax, identifier: TokenSyntax, genericParameters: GenericParameterClauseSyntax?, inheritanceClause: TypeInheritanceClauseSyntax?, genericWhereClause: GenericWhereClauseSyntax?, members: MemberDeclBlockSyntax) -> EnumDeclSyntax {
+    let data = SyntaxData(raw: .node(.enumDecl, [
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      modifiers?.data.raw ?? RawSyntax.missing(.modifierList),
+      indirectKeyword?.data.raw ?? RawSyntax.missingToken(.unknown("")),
+      enumKeyword.data.raw,
+      identifier.data.raw,
+      genericParameters?.data.raw ?? RawSyntax.missing(.genericParameterClause),
+      inheritanceClause?.data.raw ?? RawSyntax.missing(.typeInheritanceClause),
+      genericWhereClause?.data.raw ?? RawSyntax.missing(.genericWhereClause),
+      members.data.raw,
+    ], .present))
+    return EnumDeclSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankEnumDecl() -> EnumDeclSyntax {
+    let data = SyntaxData(raw: .node(.enumDecl, [
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missing(.modifierList),
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missingToken(.enumKeyword),
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missing(.genericParameterClause),
+      RawSyntax.missing(.typeInheritanceClause),
+      RawSyntax.missing(.genericWhereClause),
+      RawSyntax.missing(.memberDeclBlock),
+    ], .present))
+    return EnumDeclSyntax(root: data, data: data)
+  }
   public static func makeTokenList(
     _ elements: [TokenSyntax]) -> TokenListSyntax {
     let data = SyntaxData(raw: .node(.tokenList,
@@ -648,13 +2005,11 @@ public enum SyntaxFactory {
     ], .present))
     return TokenListSyntax(root: data, data: data)
   }
-  public static func makeAttribute(atSignToken: TokenSyntax, identifier: TokenSyntax, leftParen: TokenSyntax?, balancedTokens: TokenListSyntax, rightParen: TokenSyntax?) -> AttributeSyntax {
+  public static func makeAttribute(atSignToken: TokenSyntax, attributeName: TokenSyntax, balancedTokens: TokenListSyntax) -> AttributeSyntax {
     let data = SyntaxData(raw: .node(.attribute, [
       atSignToken.data.raw,
-      identifier.data.raw,
-      leftParen?.data.raw ?? RawSyntax.missingToken(.leftParen),
+      attributeName.data.raw,
       balancedTokens.data.raw,
-      rightParen?.data.raw ?? RawSyntax.missingToken(.rightParen),
     ], .present))
     return AttributeSyntax(root: data, data: data)
   }
@@ -662,10 +2017,8 @@ public enum SyntaxFactory {
   public static func makeBlankAttribute() -> AttributeSyntax {
     let data = SyntaxData(raw: .node(.attribute, [
       RawSyntax.missingToken(.atSign),
-      RawSyntax.missingToken(.identifier("")),
-      RawSyntax.missingToken(.leftParen),
-      RawSyntax.missingToken(.unknown),
-      RawSyntax.missingToken(.rightParen),
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missingToken(.unknown("")),
     ], .present))
     return AttributeSyntax(root: data, data: data)
   }
@@ -681,11 +2034,10 @@ public enum SyntaxFactory {
     ], .present))
     return AttributeListSyntax(root: data, data: data)
   }
-  public static func makeContinueStmt(continueKeyword: TokenSyntax, label: TokenSyntax?, semicolon: TokenSyntax?) -> ContinueStmtSyntax {
+  public static func makeContinueStmt(continueKeyword: TokenSyntax, label: TokenSyntax?) -> ContinueStmtSyntax {
     let data = SyntaxData(raw: .node(.continueStmt, [
       continueKeyword.data.raw,
       label?.data.raw ?? RawSyntax.missingToken(.identifier("")),
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return ContinueStmtSyntax(root: data, data: data)
   }
@@ -694,18 +2046,16 @@ public enum SyntaxFactory {
     let data = SyntaxData(raw: .node(.continueStmt, [
       RawSyntax.missingToken(.continueKeyword),
       RawSyntax.missingToken(.identifier("")),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return ContinueStmtSyntax(root: data, data: data)
   }
-  public static func makeWhileStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, whileKeyword: TokenSyntax, conditions: ConditionListSyntax, body: CodeBlockSyntax, semicolon: TokenSyntax?) -> WhileStmtSyntax {
+  public static func makeWhileStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, whileKeyword: TokenSyntax, conditions: ConditionElementListSyntax, body: CodeBlockSyntax) -> WhileStmtSyntax {
     let data = SyntaxData(raw: .node(.whileStmt, [
       labelName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
       labelColon?.data.raw ?? RawSyntax.missingToken(.colon),
       whileKeyword.data.raw,
       conditions.data.raw,
       body.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return WhileStmtSyntax(root: data, data: data)
   }
@@ -715,17 +2065,15 @@ public enum SyntaxFactory {
       RawSyntax.missingToken(.identifier("")),
       RawSyntax.missingToken(.colon),
       RawSyntax.missingToken(.whileKeyword),
-      RawSyntax.missing(.conditionList),
+      RawSyntax.missing(.conditionElementList),
       RawSyntax.missing(.codeBlock),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return WhileStmtSyntax(root: data, data: data)
   }
-  public static func makeDeferStmt(deferKeyword: TokenSyntax, body: CodeBlockSyntax, semicolon: TokenSyntax?) -> DeferStmtSyntax {
+  public static func makeDeferStmt(deferKeyword: TokenSyntax, body: CodeBlockSyntax) -> DeferStmtSyntax {
     let data = SyntaxData(raw: .node(.deferStmt, [
       deferKeyword.data.raw,
       body.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return DeferStmtSyntax(root: data, data: data)
   }
@@ -734,14 +2082,12 @@ public enum SyntaxFactory {
     let data = SyntaxData(raw: .node(.deferStmt, [
       RawSyntax.missingToken(.deferKeyword),
       RawSyntax.missing(.codeBlock),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return DeferStmtSyntax(root: data, data: data)
   }
-  public static func makeExpressionStmt(expression: ExprSyntax, semicolon: TokenSyntax?) -> ExpressionStmtSyntax {
+  public static func makeExpressionStmt(expression: ExprSyntax) -> ExpressionStmtSyntax {
     let data = SyntaxData(raw: .node(.expressionStmt, [
       expression.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return ExpressionStmtSyntax(root: data, data: data)
   }
@@ -749,7 +2095,6 @@ public enum SyntaxFactory {
   public static func makeBlankExpressionStmt() -> ExpressionStmtSyntax {
     let data = SyntaxData(raw: .node(.expressionStmt, [
       RawSyntax.missing(.expr),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return ExpressionStmtSyntax(root: data, data: data)
   }
@@ -765,7 +2110,7 @@ public enum SyntaxFactory {
     ], .present))
     return SwitchCaseListSyntax(root: data, data: data)
   }
-  public static func makeRepeatWhileStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, repeatKeyword: TokenSyntax, body: CodeBlockSyntax, whileKeyword: TokenSyntax, condition: ExprSyntax, semicolon: TokenSyntax?) -> RepeatWhileStmtSyntax {
+  public static func makeRepeatWhileStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, repeatKeyword: TokenSyntax, body: CodeBlockSyntax, whileKeyword: TokenSyntax, condition: ExprSyntax) -> RepeatWhileStmtSyntax {
     let data = SyntaxData(raw: .node(.repeatWhileStmt, [
       labelName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
       labelColon?.data.raw ?? RawSyntax.missingToken(.colon),
@@ -773,7 +2118,6 @@ public enum SyntaxFactory {
       body.data.raw,
       whileKeyword.data.raw,
       condition.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return RepeatWhileStmtSyntax(root: data, data: data)
   }
@@ -786,17 +2130,15 @@ public enum SyntaxFactory {
       RawSyntax.missing(.codeBlock),
       RawSyntax.missingToken(.whileKeyword),
       RawSyntax.missing(.expr),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return RepeatWhileStmtSyntax(root: data, data: data)
   }
-  public static func makeGuardStmt(guardKeyword: TokenSyntax, conditions: ConditionListSyntax, elseKeyword: TokenSyntax, body: CodeBlockSyntax, semicolon: TokenSyntax?) -> GuardStmtSyntax {
+  public static func makeGuardStmt(guardKeyword: TokenSyntax, conditions: ConditionElementListSyntax, elseKeyword: TokenSyntax, body: CodeBlockSyntax) -> GuardStmtSyntax {
     let data = SyntaxData(raw: .node(.guardStmt, [
       guardKeyword.data.raw,
       conditions.data.raw,
       elseKeyword.data.raw,
       body.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return GuardStmtSyntax(root: data, data: data)
   }
@@ -804,29 +2146,16 @@ public enum SyntaxFactory {
   public static func makeBlankGuardStmt() -> GuardStmtSyntax {
     let data = SyntaxData(raw: .node(.guardStmt, [
       RawSyntax.missingToken(.guardKeyword),
-      RawSyntax.missing(.conditionList),
+      RawSyntax.missing(.conditionElementList),
       RawSyntax.missingToken(.elseKeyword),
       RawSyntax.missing(.codeBlock),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return GuardStmtSyntax(root: data, data: data)
   }
-  public static func makeExprList(
-    _ elements: [ExprSyntax]) -> ExprListSyntax {
-    let data = SyntaxData(raw: .node(.exprList,
-                                     elements.map { $0.data.raw }, .present))
-    return ExprListSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankExprList() -> ExprListSyntax {
-    let data = SyntaxData(raw: .node(.exprList, [
-    ], .present))
-    return ExprListSyntax(root: data, data: data)
-  }
-  public static func makeWhereClause(whereKeyword: TokenSyntax, expressions: ExprListSyntax) -> WhereClauseSyntax {
+  public static func makeWhereClause(whereKeyword: TokenSyntax, guardResult: ExprSyntax) -> WhereClauseSyntax {
     let data = SyntaxData(raw: .node(.whereClause, [
       whereKeyword.data.raw,
-      expressions.data.raw,
+      guardResult.data.raw,
     ], .present))
     return WhereClauseSyntax(root: data, data: data)
   }
@@ -834,22 +2163,22 @@ public enum SyntaxFactory {
   public static func makeBlankWhereClause() -> WhereClauseSyntax {
     let data = SyntaxData(raw: .node(.whereClause, [
       RawSyntax.missingToken(.whereKeyword),
-      RawSyntax.missing(.exprList),
+      RawSyntax.missing(.expr),
     ], .present))
     return WhereClauseSyntax(root: data, data: data)
   }
-  public static func makeForInStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, forKeyword: TokenSyntax, caseKeyword: TokenSyntax?, itemPattern: PatternSyntax, inKeyword: TokenSyntax, collectionExpr: ExprSyntax, whereClause: WhereClauseSyntax?, body: CodeBlockSyntax, semicolon: TokenSyntax?) -> ForInStmtSyntax {
+  public static func makeForInStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, forKeyword: TokenSyntax, caseKeyword: TokenSyntax?, pattern: PatternSyntax, typeAnnotation: TypeAnnotationSyntax?, inKeyword: TokenSyntax, sequenceExpr: ExprSyntax, whereClause: WhereClauseSyntax?, body: CodeBlockSyntax) -> ForInStmtSyntax {
     let data = SyntaxData(raw: .node(.forInStmt, [
       labelName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
       labelColon?.data.raw ?? RawSyntax.missingToken(.colon),
       forKeyword.data.raw,
       caseKeyword?.data.raw ?? RawSyntax.missingToken(.caseKeyword),
-      itemPattern.data.raw,
+      pattern.data.raw,
+      typeAnnotation?.data.raw ?? RawSyntax.missing(.typeAnnotation),
       inKeyword.data.raw,
-      collectionExpr.data.raw,
+      sequenceExpr.data.raw,
       whereClause?.data.raw ?? RawSyntax.missing(.whereClause),
       body.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return ForInStmtSyntax(root: data, data: data)
   }
@@ -861,24 +2190,23 @@ public enum SyntaxFactory {
       RawSyntax.missingToken(.forKeyword),
       RawSyntax.missingToken(.caseKeyword),
       RawSyntax.missing(.pattern),
+      RawSyntax.missing(.typeAnnotation),
       RawSyntax.missingToken(.inKeyword),
       RawSyntax.missing(.expr),
       RawSyntax.missing(.whereClause),
       RawSyntax.missing(.codeBlock),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return ForInStmtSyntax(root: data, data: data)
   }
-  public static func makeSwitchStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, switchKeyword: TokenSyntax, expression: ExprSyntax, openBrace: TokenSyntax, cases: SwitchCaseListSyntax, closeBrace: TokenSyntax, semicolon: TokenSyntax?) -> SwitchStmtSyntax {
+  public static func makeSwitchStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, switchKeyword: TokenSyntax, expression: ExprSyntax, leftBrace: TokenSyntax, cases: SwitchCaseListSyntax, rightBrace: TokenSyntax) -> SwitchStmtSyntax {
     let data = SyntaxData(raw: .node(.switchStmt, [
       labelName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
       labelColon?.data.raw ?? RawSyntax.missingToken(.colon),
       switchKeyword.data.raw,
       expression.data.raw,
-      openBrace.data.raw,
+      leftBrace.data.raw,
       cases.data.raw,
-      closeBrace.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
+      rightBrace.data.raw,
     ], .present))
     return SwitchStmtSyntax(root: data, data: data)
   }
@@ -892,7 +2220,6 @@ public enum SyntaxFactory {
       RawSyntax.missingToken(.leftBrace),
       RawSyntax.missing(.switchCaseList),
       RawSyntax.missingToken(.rightBrace),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return SwitchStmtSyntax(root: data, data: data)
   }
@@ -908,14 +2235,13 @@ public enum SyntaxFactory {
     ], .present))
     return CatchClauseListSyntax(root: data, data: data)
   }
-  public static func makeDoStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, doKeyword: TokenSyntax, body: CodeBlockSyntax, catchClauses: CatchClauseListSyntax, semicolon: TokenSyntax?) -> DoStmtSyntax {
+  public static func makeDoStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, doKeyword: TokenSyntax, body: CodeBlockSyntax, catchClauses: CatchClauseListSyntax?) -> DoStmtSyntax {
     let data = SyntaxData(raw: .node(.doStmt, [
       labelName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
       labelColon?.data.raw ?? RawSyntax.missingToken(.colon),
       doKeyword.data.raw,
       body.data.raw,
-      catchClauses.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
+      catchClauses?.data.raw ?? RawSyntax.missing(.catchClauseList),
     ], .present))
     return DoStmtSyntax(root: data, data: data)
   }
@@ -927,15 +2253,13 @@ public enum SyntaxFactory {
       RawSyntax.missingToken(.doKeyword),
       RawSyntax.missing(.codeBlock),
       RawSyntax.missing(.catchClauseList),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return DoStmtSyntax(root: data, data: data)
   }
-  public static func makeReturnStmt(returnKeyword: TokenSyntax, expression: ExprSyntax?, semicolon: TokenSyntax?) -> ReturnStmtSyntax {
+  public static func makeReturnStmt(returnKeyword: TokenSyntax, expression: ExprSyntax?) -> ReturnStmtSyntax {
     let data = SyntaxData(raw: .node(.returnStmt, [
       returnKeyword.data.raw,
       expression?.data.raw ?? RawSyntax.missing(.expr),
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return ReturnStmtSyntax(root: data, data: data)
   }
@@ -944,14 +2268,12 @@ public enum SyntaxFactory {
     let data = SyntaxData(raw: .node(.returnStmt, [
       RawSyntax.missingToken(.returnKeyword),
       RawSyntax.missing(.expr),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return ReturnStmtSyntax(root: data, data: data)
   }
-  public static func makeFallthroughStmt(fallthroughKeyword: TokenSyntax, semicolon: TokenSyntax?) -> FallthroughStmtSyntax {
+  public static func makeFallthroughStmt(fallthroughKeyword: TokenSyntax) -> FallthroughStmtSyntax {
     let data = SyntaxData(raw: .node(.fallthroughStmt, [
       fallthroughKeyword.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return FallthroughStmtSyntax(root: data, data: data)
   }
@@ -959,15 +2281,13 @@ public enum SyntaxFactory {
   public static func makeBlankFallthroughStmt() -> FallthroughStmtSyntax {
     let data = SyntaxData(raw: .node(.fallthroughStmt, [
       RawSyntax.missingToken(.fallthroughKeyword),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return FallthroughStmtSyntax(root: data, data: data)
   }
-  public static func makeBreakStmt(breakKeyword: TokenSyntax, label: TokenSyntax?, semicolon: TokenSyntax?) -> BreakStmtSyntax {
+  public static func makeBreakStmt(breakKeyword: TokenSyntax, label: TokenSyntax?) -> BreakStmtSyntax {
     let data = SyntaxData(raw: .node(.breakStmt, [
       breakKeyword.data.raw,
       label?.data.raw ?? RawSyntax.missingToken(.identifier("")),
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return BreakStmtSyntax(root: data, data: data)
   }
@@ -976,26 +2296,8 @@ public enum SyntaxFactory {
     let data = SyntaxData(raw: .node(.breakStmt, [
       RawSyntax.missingToken(.breakKeyword),
       RawSyntax.missingToken(.identifier("")),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return BreakStmtSyntax(root: data, data: data)
-  }
-  public static func makeCodeBlock(openBrace: TokenSyntax, statments: StmtListSyntax, closeBrace: TokenSyntax) -> CodeBlockSyntax {
-    let data = SyntaxData(raw: .node(.codeBlock, [
-      openBrace.data.raw,
-      statments.data.raw,
-      closeBrace.data.raw,
-    ], .present))
-    return CodeBlockSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankCodeBlock() -> CodeBlockSyntax {
-    let data = SyntaxData(raw: .node(.codeBlock, [
-      RawSyntax.missingToken(.leftBrace),
-      RawSyntax.missing(.stmtList),
-      RawSyntax.missingToken(.rightBrace),
-    ], .present))
-    return CodeBlockSyntax(root: data, data: data)
   }
   public static func makeCaseItemList(
     _ elements: [CaseItemSyntax]) -> CaseItemListSyntax {
@@ -1009,37 +2311,89 @@ public enum SyntaxFactory {
     ], .present))
     return CaseItemListSyntax(root: data, data: data)
   }
-  public static func makeCondition(condition: Syntax, trailingComma: TokenSyntax?) -> ConditionSyntax {
-    let data = SyntaxData(raw: .node(.condition, [
+  public static func makeConditionElement(condition: Syntax, trailingComma: TokenSyntax?) -> ConditionElementSyntax {
+    let data = SyntaxData(raw: .node(.conditionElement, [
       condition.data.raw,
       trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
     ], .present))
-    return ConditionSyntax(root: data, data: data)
+    return ConditionElementSyntax(root: data, data: data)
   }
 
-  public static func makeBlankCondition() -> ConditionSyntax {
-    let data = SyntaxData(raw: .node(.condition, [
+  public static func makeBlankConditionElement() -> ConditionElementSyntax {
+    let data = SyntaxData(raw: .node(.conditionElement, [
       RawSyntax.missing(.unknown),
       RawSyntax.missingToken(.comma),
     ], .present))
-    return ConditionSyntax(root: data, data: data)
+    return ConditionElementSyntax(root: data, data: data)
   }
-  public static func makeConditionList(
-    _ elements: [ConditionSyntax]) -> ConditionListSyntax {
-    let data = SyntaxData(raw: .node(.conditionList,
-                                     elements.map { $0.data.raw }, .present))
-    return ConditionListSyntax(root: data, data: data)
+  public static func makeAvailabilityCondition(poundAvailableKeyword: TokenSyntax, arguments: TokenListSyntax) -> AvailabilityConditionSyntax {
+    let data = SyntaxData(raw: .node(.availabilityCondition, [
+      poundAvailableKeyword.data.raw,
+      arguments.data.raw,
+    ], .present))
+    return AvailabilityConditionSyntax(root: data, data: data)
   }
 
-  public static func makeBlankConditionList() -> ConditionListSyntax {
-    let data = SyntaxData(raw: .node(.conditionList, [
+  public static func makeBlankAvailabilityCondition() -> AvailabilityConditionSyntax {
+    let data = SyntaxData(raw: .node(.availabilityCondition, [
+      RawSyntax.missingToken(.poundAvailableKeyword),
+      RawSyntax.missingToken(.unknown("")),
     ], .present))
-    return ConditionListSyntax(root: data, data: data)
+    return AvailabilityConditionSyntax(root: data, data: data)
   }
-  public static func makeDeclarationStmt(declaration: DeclSyntax, semicolon: TokenSyntax?) -> DeclarationStmtSyntax {
+  public static func makeMatchingPatternCondition(caseKeyword: TokenSyntax, pattern: PatternSyntax, typeAnnotation: TypeAnnotationSyntax?, initializer: InitializerClauseSyntax) -> MatchingPatternConditionSyntax {
+    let data = SyntaxData(raw: .node(.matchingPatternCondition, [
+      caseKeyword.data.raw,
+      pattern.data.raw,
+      typeAnnotation?.data.raw ?? RawSyntax.missing(.typeAnnotation),
+      initializer.data.raw,
+    ], .present))
+    return MatchingPatternConditionSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankMatchingPatternCondition() -> MatchingPatternConditionSyntax {
+    let data = SyntaxData(raw: .node(.matchingPatternCondition, [
+      RawSyntax.missingToken(.caseKeyword),
+      RawSyntax.missing(.pattern),
+      RawSyntax.missing(.typeAnnotation),
+      RawSyntax.missing(.initializerClause),
+    ], .present))
+    return MatchingPatternConditionSyntax(root: data, data: data)
+  }
+  public static func makeOptionalBindingCondition(letOrVarKeyword: TokenSyntax, pattern: PatternSyntax, typeAnnotation: TypeAnnotationSyntax?, initializer: InitializerClauseSyntax) -> OptionalBindingConditionSyntax {
+    let data = SyntaxData(raw: .node(.optionalBindingCondition, [
+      letOrVarKeyword.data.raw,
+      pattern.data.raw,
+      typeAnnotation?.data.raw ?? RawSyntax.missing(.typeAnnotation),
+      initializer.data.raw,
+    ], .present))
+    return OptionalBindingConditionSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankOptionalBindingCondition() -> OptionalBindingConditionSyntax {
+    let data = SyntaxData(raw: .node(.optionalBindingCondition, [
+      RawSyntax.missingToken(.letKeyword),
+      RawSyntax.missing(.pattern),
+      RawSyntax.missing(.typeAnnotation),
+      RawSyntax.missing(.initializerClause),
+    ], .present))
+    return OptionalBindingConditionSyntax(root: data, data: data)
+  }
+  public static func makeConditionElementList(
+    _ elements: [ConditionElementSyntax]) -> ConditionElementListSyntax {
+    let data = SyntaxData(raw: .node(.conditionElementList,
+                                     elements.map { $0.data.raw }, .present))
+    return ConditionElementListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankConditionElementList() -> ConditionElementListSyntax {
+    let data = SyntaxData(raw: .node(.conditionElementList, [
+    ], .present))
+    return ConditionElementListSyntax(root: data, data: data)
+  }
+  public static func makeDeclarationStmt(declaration: DeclSyntax) -> DeclarationStmtSyntax {
     let data = SyntaxData(raw: .node(.declarationStmt, [
       declaration.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return DeclarationStmtSyntax(root: data, data: data)
   }
@@ -1047,15 +2401,13 @@ public enum SyntaxFactory {
   public static func makeBlankDeclarationStmt() -> DeclarationStmtSyntax {
     let data = SyntaxData(raw: .node(.declarationStmt, [
       RawSyntax.missing(.decl),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return DeclarationStmtSyntax(root: data, data: data)
   }
-  public static func makeThrowStmt(throwKeyword: TokenSyntax, expression: ExprSyntax, semicolon: TokenSyntax?) -> ThrowStmtSyntax {
+  public static func makeThrowStmt(throwKeyword: TokenSyntax, expression: ExprSyntax) -> ThrowStmtSyntax {
     let data = SyntaxData(raw: .node(.throwStmt, [
       throwKeyword.data.raw,
       expression.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return ThrowStmtSyntax(root: data, data: data)
   }
@@ -1064,19 +2416,18 @@ public enum SyntaxFactory {
     let data = SyntaxData(raw: .node(.throwStmt, [
       RawSyntax.missingToken(.throwKeyword),
       RawSyntax.missing(.expr),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return ThrowStmtSyntax(root: data, data: data)
   }
-  public static func makeIfStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, ifKeyword: TokenSyntax, conditions: ConditionListSyntax, body: CodeBlockSyntax, elseClause: Syntax?, semicolon: TokenSyntax?) -> IfStmtSyntax {
+  public static func makeIfStmt(labelName: TokenSyntax?, labelColon: TokenSyntax?, ifKeyword: TokenSyntax, conditions: ConditionElementListSyntax, body: CodeBlockSyntax, elseKeyword: TokenSyntax?, elseBody: Syntax?) -> IfStmtSyntax {
     let data = SyntaxData(raw: .node(.ifStmt, [
       labelName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
       labelColon?.data.raw ?? RawSyntax.missingToken(.colon),
       ifKeyword.data.raw,
       conditions.data.raw,
       body.data.raw,
-      elseClause?.data.raw ?? RawSyntax.missing(.unknown),
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
+      elseKeyword?.data.raw ?? RawSyntax.missingToken(.elseKeyword),
+      elseBody?.data.raw ?? RawSyntax.missing(.unknown),
     ], .present))
     return IfStmtSyntax(root: data, data: data)
   }
@@ -1086,10 +2437,10 @@ public enum SyntaxFactory {
       RawSyntax.missingToken(.identifier("")),
       RawSyntax.missingToken(.colon),
       RawSyntax.missingToken(.ifKeyword),
-      RawSyntax.missing(.conditionList),
+      RawSyntax.missing(.conditionElementList),
       RawSyntax.missing(.codeBlock),
+      RawSyntax.missingToken(.elseKeyword),
       RawSyntax.missing(.unknown),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return IfStmtSyntax(root: data, data: data)
   }
@@ -1106,11 +2457,10 @@ public enum SyntaxFactory {
     ], .present))
     return ElseIfContinuationSyntax(root: data, data: data)
   }
-  public static func makeElseBlock(elseKeyword: TokenSyntax, body: CodeBlockSyntax, semicolon: TokenSyntax?) -> ElseBlockSyntax {
+  public static func makeElseBlock(elseKeyword: TokenSyntax, body: CodeBlockSyntax) -> ElseBlockSyntax {
     let data = SyntaxData(raw: .node(.elseBlock, [
       elseKeyword.data.raw,
       body.data.raw,
-      semicolon?.data.raw ?? RawSyntax.missingToken(.semicolon),
     ], .present))
     return ElseBlockSyntax(root: data, data: data)
   }
@@ -1119,26 +2469,13 @@ public enum SyntaxFactory {
     let data = SyntaxData(raw: .node(.elseBlock, [
       RawSyntax.missingToken(.elseKeyword),
       RawSyntax.missing(.codeBlock),
-      RawSyntax.missingToken(.semicolon),
     ], .present))
     return ElseBlockSyntax(root: data, data: data)
   }
-  public static func makeStmtList(
-    _ elements: [StmtSyntax]) -> StmtListSyntax {
-    let data = SyntaxData(raw: .node(.stmtList,
-                                     elements.map { $0.data.raw }, .present))
-    return StmtListSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankStmtList() -> StmtListSyntax {
-    let data = SyntaxData(raw: .node(.stmtList, [
-    ], .present))
-    return StmtListSyntax(root: data, data: data)
-  }
-  public static func makeSwitchCase(label: Syntax, body: StmtListSyntax) -> SwitchCaseSyntax {
+  public static func makeSwitchCase(label: Syntax, statements: CodeBlockItemListSyntax) -> SwitchCaseSyntax {
     let data = SyntaxData(raw: .node(.switchCase, [
       label.data.raw,
-      body.data.raw,
+      statements.data.raw,
     ], .present))
     return SwitchCaseSyntax(root: data, data: data)
   }
@@ -1146,7 +2483,7 @@ public enum SyntaxFactory {
   public static func makeBlankSwitchCase() -> SwitchCaseSyntax {
     let data = SyntaxData(raw: .node(.switchCase, [
       RawSyntax.missing(.unknown),
-      RawSyntax.missing(.stmtList),
+      RawSyntax.missing(.codeBlockItemList),
     ], .present))
     return SwitchCaseSyntax(root: data, data: data)
   }
@@ -1165,11 +2502,11 @@ public enum SyntaxFactory {
     ], .present))
     return SwitchDefaultLabelSyntax(root: data, data: data)
   }
-  public static func makeCaseItem(pattern: PatternSyntax, whereClause: WhereClauseSyntax?, comma: TokenSyntax?) -> CaseItemSyntax {
+  public static func makeCaseItem(pattern: PatternSyntax, whereClause: WhereClauseSyntax?, trailingComma: TokenSyntax?) -> CaseItemSyntax {
     let data = SyntaxData(raw: .node(.caseItem, [
       pattern.data.raw,
       whereClause?.data.raw ?? RawSyntax.missing(.whereClause),
-      comma?.data.raw ?? RawSyntax.missingToken(.comma),
+      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
     ], .present))
     return CaseItemSyntax(root: data, data: data)
   }
@@ -1245,7 +2582,7 @@ public enum SyntaxFactory {
     ], .present))
     return GenericRequirementListSyntax(root: data, data: data)
   }
-  public static func makeSameTypeRequirement(leftTypeIdentifier: TypeIdentifierSyntax, equalityToken: TokenSyntax, rightTypeIdentifier: TypeIdentifierSyntax, trailingComma: TokenSyntax?) -> SameTypeRequirementSyntax {
+  public static func makeSameTypeRequirement(leftTypeIdentifier: TypeSyntax, equalityToken: TokenSyntax, rightTypeIdentifier: TypeSyntax, trailingComma: TokenSyntax?) -> SameTypeRequirementSyntax {
     let data = SyntaxData(raw: .node(.sameTypeRequirement, [
       leftTypeIdentifier.data.raw,
       equalityToken.data.raw,
@@ -1257,9 +2594,9 @@ public enum SyntaxFactory {
 
   public static func makeBlankSameTypeRequirement() -> SameTypeRequirementSyntax {
     let data = SyntaxData(raw: .node(.sameTypeRequirement, [
-      RawSyntax.missing(.typeIdentifier),
+      RawSyntax.missing(.type),
       RawSyntax.missingToken(.spacedBinaryOperator("")),
-      RawSyntax.missing(.typeIdentifier),
+      RawSyntax.missing(.type),
       RawSyntax.missingToken(.comma),
     ], .present))
     return SameTypeRequirementSyntax(root: data, data: data)
@@ -1276,9 +2613,10 @@ public enum SyntaxFactory {
     ], .present))
     return GenericParameterListSyntax(root: data, data: data)
   }
-  public static func makeGenericParameter(typeIdentifier: TypeIdentifierSyntax, colon: TokenSyntax?, inheritedType: TypeSyntax?, trailingComma: TokenSyntax?) -> GenericParameterSyntax {
+  public static func makeGenericParameter(attributes: AttributeListSyntax?, name: TokenSyntax, colon: TokenSyntax?, inheritedType: TypeSyntax?, trailingComma: TokenSyntax?) -> GenericParameterSyntax {
     let data = SyntaxData(raw: .node(.genericParameter, [
-      typeIdentifier.data.raw,
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      name.data.raw,
       colon?.data.raw ?? RawSyntax.missingToken(.colon),
       inheritedType?.data.raw ?? RawSyntax.missing(.type),
       trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
@@ -1288,7 +2626,8 @@ public enum SyntaxFactory {
 
   public static func makeBlankGenericParameter() -> GenericParameterSyntax {
     let data = SyntaxData(raw: .node(.genericParameter, [
-      RawSyntax.missing(.typeIdentifier),
+      RawSyntax.missing(.attributeList),
+      RawSyntax.missingToken(.identifier("")),
       RawSyntax.missingToken(.colon),
       RawSyntax.missing(.type),
       RawSyntax.missingToken(.comma),
@@ -1312,7 +2651,7 @@ public enum SyntaxFactory {
     ], .present))
     return GenericParameterClauseSyntax(root: data, data: data)
   }
-  public static func makeConformanceRequirement(leftTypeIdentifier: TypeIdentifierSyntax, colon: TokenSyntax, rightTypeIdentifier: TypeIdentifierSyntax, trailingComma: TokenSyntax?) -> ConformanceRequirementSyntax {
+  public static func makeConformanceRequirement(leftTypeIdentifier: TypeSyntax, colon: TokenSyntax, rightTypeIdentifier: TypeSyntax, trailingComma: TokenSyntax?) -> ConformanceRequirementSyntax {
     let data = SyntaxData(raw: .node(.conformanceRequirement, [
       leftTypeIdentifier.data.raw,
       colon.data.raw,
@@ -1324,29 +2663,63 @@ public enum SyntaxFactory {
 
   public static func makeBlankConformanceRequirement() -> ConformanceRequirementSyntax {
     let data = SyntaxData(raw: .node(.conformanceRequirement, [
-      RawSyntax.missing(.typeIdentifier),
+      RawSyntax.missing(.type),
       RawSyntax.missingToken(.colon),
-      RawSyntax.missing(.typeIdentifier),
+      RawSyntax.missing(.type),
       RawSyntax.missingToken(.comma),
     ], .present))
     return ConformanceRequirementSyntax(root: data, data: data)
   }
-  public static func makeMetatypeType(baseType: TypeSyntax, period: TokenSyntax, typeOrProtocol: TokenSyntax) -> MetatypeTypeSyntax {
-    let data = SyntaxData(raw: .node(.metatypeType, [
-      baseType.data.raw,
-      period.data.raw,
-      typeOrProtocol.data.raw,
+  public static func makeSimpleTypeIdentifier(name: TokenSyntax, genericArgumentClause: GenericArgumentClauseSyntax?) -> SimpleTypeIdentifierSyntax {
+    let data = SyntaxData(raw: .node(.simpleTypeIdentifier, [
+      name.data.raw,
+      genericArgumentClause?.data.raw ?? RawSyntax.missing(.genericArgumentClause),
     ], .present))
-    return MetatypeTypeSyntax(root: data, data: data)
+    return SimpleTypeIdentifierSyntax(root: data, data: data)
   }
 
-  public static func makeBlankMetatypeType() -> MetatypeTypeSyntax {
-    let data = SyntaxData(raw: .node(.metatypeType, [
+  public static func makeBlankSimpleTypeIdentifier() -> SimpleTypeIdentifierSyntax {
+    let data = SyntaxData(raw: .node(.simpleTypeIdentifier, [
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missing(.genericArgumentClause),
+    ], .present))
+    return SimpleTypeIdentifierSyntax(root: data, data: data)
+  }
+  public static func makeMemberTypeIdentifier(baseType: TypeSyntax, period: TokenSyntax, name: TokenSyntax, genericArgumentClause: GenericArgumentClauseSyntax?) -> MemberTypeIdentifierSyntax {
+    let data = SyntaxData(raw: .node(.memberTypeIdentifier, [
+      baseType.data.raw,
+      period.data.raw,
+      name.data.raw,
+      genericArgumentClause?.data.raw ?? RawSyntax.missing(.genericArgumentClause),
+    ], .present))
+    return MemberTypeIdentifierSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankMemberTypeIdentifier() -> MemberTypeIdentifierSyntax {
+    let data = SyntaxData(raw: .node(.memberTypeIdentifier, [
       RawSyntax.missing(.type),
       RawSyntax.missingToken(.period),
       RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missing(.genericArgumentClause),
     ], .present))
-    return MetatypeTypeSyntax(root: data, data: data)
+    return MemberTypeIdentifierSyntax(root: data, data: data)
+  }
+  public static func makeArrayType(leftSquareBracket: TokenSyntax, elementType: TypeSyntax, rightSquareBracket: TokenSyntax) -> ArrayTypeSyntax {
+    let data = SyntaxData(raw: .node(.arrayType, [
+      leftSquareBracket.data.raw,
+      elementType.data.raw,
+      rightSquareBracket.data.raw,
+    ], .present))
+    return ArrayTypeSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankArrayType() -> ArrayTypeSyntax {
+    let data = SyntaxData(raw: .node(.arrayType, [
+      RawSyntax.missingToken(.leftSquareBracket),
+      RawSyntax.missing(.type),
+      RawSyntax.missingToken(.rightSquareBracket),
+    ], .present))
+    return ArrayTypeSyntax(root: data, data: data)
   }
   public static func makeDictionaryType(leftSquareBracket: TokenSyntax, keyType: TypeSyntax, colon: TokenSyntax, valueType: TypeSyntax, rightSquareBracket: TokenSyntax) -> DictionaryTypeSyntax {
     let data = SyntaxData(raw: .node(.dictionaryType, [
@@ -1369,30 +2742,131 @@ public enum SyntaxFactory {
     ], .present))
     return DictionaryTypeSyntax(root: data, data: data)
   }
-  public static func makeFunctionType(typeAttributes: AttributeListSyntax, leftParen: TokenSyntax, argumentList: FunctionTypeArgumentListSyntax, rightParen: TokenSyntax, throwsOrRethrowsKeyword: TokenSyntax?, arrow: TokenSyntax?, returnType: TypeSyntax?) -> FunctionTypeSyntax {
-    let data = SyntaxData(raw: .node(.functionType, [
-      typeAttributes.data.raw,
-      leftParen.data.raw,
-      argumentList.data.raw,
-      rightParen.data.raw,
-      throwsOrRethrowsKeyword?.data.raw ?? RawSyntax.missingToken(.throwsKeyword),
-      arrow?.data.raw ?? RawSyntax.missingToken(.arrow),
-      returnType?.data.raw ?? RawSyntax.missing(.type),
+  public static func makeMetatypeType(baseType: TypeSyntax, period: TokenSyntax, typeOrProtocol: TokenSyntax) -> MetatypeTypeSyntax {
+    let data = SyntaxData(raw: .node(.metatypeType, [
+      baseType.data.raw,
+      period.data.raw,
+      typeOrProtocol.data.raw,
     ], .present))
-    return FunctionTypeSyntax(root: data, data: data)
+    return MetatypeTypeSyntax(root: data, data: data)
   }
 
-  public static func makeBlankFunctionType() -> FunctionTypeSyntax {
-    let data = SyntaxData(raw: .node(.functionType, [
-      RawSyntax.missing(.attributeList),
-      RawSyntax.missingToken(.leftParen),
-      RawSyntax.missing(.functionTypeArgumentList),
-      RawSyntax.missingToken(.rightParen),
-      RawSyntax.missingToken(.throwsKeyword),
-      RawSyntax.missingToken(.arrow),
+  public static func makeBlankMetatypeType() -> MetatypeTypeSyntax {
+    let data = SyntaxData(raw: .node(.metatypeType, [
       RawSyntax.missing(.type),
+      RawSyntax.missingToken(.period),
+      RawSyntax.missingToken(.identifier("")),
     ], .present))
-    return FunctionTypeSyntax(root: data, data: data)
+    return MetatypeTypeSyntax(root: data, data: data)
+  }
+  public static func makeOptionalType(wrappedType: TypeSyntax, questionMark: TokenSyntax) -> OptionalTypeSyntax {
+    let data = SyntaxData(raw: .node(.optionalType, [
+      wrappedType.data.raw,
+      questionMark.data.raw,
+    ], .present))
+    return OptionalTypeSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankOptionalType() -> OptionalTypeSyntax {
+    let data = SyntaxData(raw: .node(.optionalType, [
+      RawSyntax.missing(.type),
+      RawSyntax.missingToken(.postfixQuestionMark),
+    ], .present))
+    return OptionalTypeSyntax(root: data, data: data)
+  }
+  public static func makeImplicitlyUnwrappedOptionalType(wrappedType: TypeSyntax, exclamationMark: TokenSyntax) -> ImplicitlyUnwrappedOptionalTypeSyntax {
+    let data = SyntaxData(raw: .node(.implicitlyUnwrappedOptionalType, [
+      wrappedType.data.raw,
+      exclamationMark.data.raw,
+    ], .present))
+    return ImplicitlyUnwrappedOptionalTypeSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankImplicitlyUnwrappedOptionalType() -> ImplicitlyUnwrappedOptionalTypeSyntax {
+    let data = SyntaxData(raw: .node(.implicitlyUnwrappedOptionalType, [
+      RawSyntax.missing(.type),
+      RawSyntax.missingToken(.exclamationMark),
+    ], .present))
+    return ImplicitlyUnwrappedOptionalTypeSyntax(root: data, data: data)
+  }
+  public static func makeCompositionTypeElement(type: TypeSyntax, ampersand: TokenSyntax?) -> CompositionTypeElementSyntax {
+    let data = SyntaxData(raw: .node(.compositionTypeElement, [
+      type.data.raw,
+      ampersand?.data.raw ?? RawSyntax.missingToken(.unknown("")),
+    ], .present))
+    return CompositionTypeElementSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankCompositionTypeElement() -> CompositionTypeElementSyntax {
+    let data = SyntaxData(raw: .node(.compositionTypeElement, [
+      RawSyntax.missing(.type),
+      RawSyntax.missingToken(.unknown("")),
+    ], .present))
+    return CompositionTypeElementSyntax(root: data, data: data)
+  }
+  public static func makeCompositionTypeElementList(
+    _ elements: [CompositionTypeElementSyntax]) -> CompositionTypeElementListSyntax {
+    let data = SyntaxData(raw: .node(.compositionTypeElementList,
+                                     elements.map { $0.data.raw }, .present))
+    return CompositionTypeElementListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankCompositionTypeElementList() -> CompositionTypeElementListSyntax {
+    let data = SyntaxData(raw: .node(.compositionTypeElementList, [
+    ], .present))
+    return CompositionTypeElementListSyntax(root: data, data: data)
+  }
+  public static func makeCompositionType(elements: CompositionTypeElementListSyntax) -> CompositionTypeSyntax {
+    let data = SyntaxData(raw: .node(.compositionType, [
+      elements.data.raw,
+    ], .present))
+    return CompositionTypeSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankCompositionType() -> CompositionTypeSyntax {
+    let data = SyntaxData(raw: .node(.compositionType, [
+      RawSyntax.missing(.compositionTypeElementList),
+    ], .present))
+    return CompositionTypeSyntax(root: data, data: data)
+  }
+  public static func makeTupleTypeElement(inOut: TokenSyntax?, name: TokenSyntax?, secondName: TokenSyntax?, colon: TokenSyntax?, type: TypeSyntax, ellipsis: TokenSyntax?, initializer: InitializerClauseSyntax?, trailingComma: TokenSyntax?) -> TupleTypeElementSyntax {
+    let data = SyntaxData(raw: .node(.tupleTypeElement, [
+      inOut?.data.raw ?? RawSyntax.missingToken(.unknown("")),
+      name?.data.raw ?? RawSyntax.missingToken(.identifier("")),
+      secondName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
+      colon?.data.raw ?? RawSyntax.missingToken(.colon),
+      type.data.raw,
+      ellipsis?.data.raw ?? RawSyntax.missingToken(.unknown("")),
+      initializer?.data.raw ?? RawSyntax.missing(.initializerClause),
+      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
+    ], .present))
+    return TupleTypeElementSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankTupleTypeElement() -> TupleTypeElementSyntax {
+    let data = SyntaxData(raw: .node(.tupleTypeElement, [
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missingToken(.colon),
+      RawSyntax.missing(.type),
+      RawSyntax.missingToken(.unknown("")),
+      RawSyntax.missing(.initializerClause),
+      RawSyntax.missingToken(.comma),
+    ], .present))
+    return TupleTypeElementSyntax(root: data, data: data)
+  }
+  public static func makeTupleTypeElementList(
+    _ elements: [TupleTypeElementSyntax]) -> TupleTypeElementListSyntax {
+    let data = SyntaxData(raw: .node(.tupleTypeElementList,
+                                     elements.map { $0.data.raw }, .present))
+    return TupleTypeElementListSyntax(root: data, data: data)
+  }
+
+  public static func makeBlankTupleTypeElementList() -> TupleTypeElementListSyntax {
+    let data = SyntaxData(raw: .node(.tupleTypeElementList, [
+    ], .present))
+    return TupleTypeElementListSyntax(root: data, data: data)
   }
   public static func makeTupleType(leftParen: TokenSyntax, elements: TupleTypeElementListSyntax, rightParen: TokenSyntax) -> TupleTypeSyntax {
     let data = SyntaxData(raw: .node(.tupleType, [
@@ -1411,112 +2885,45 @@ public enum SyntaxFactory {
     ], .present))
     return TupleTypeSyntax(root: data, data: data)
   }
-  public static func makeTupleTypeElement(label: TokenSyntax?, colon: TokenSyntax?, typeAnnotation: TypeAnnotationSyntax, comma: TokenSyntax?) -> TupleTypeElementSyntax {
-    let data = SyntaxData(raw: .node(.tupleTypeElement, [
-      label?.data.raw ?? RawSyntax.missingToken(.identifier("")),
-      colon?.data.raw ?? RawSyntax.missingToken(.colon),
-      typeAnnotation.data.raw,
-      comma?.data.raw ?? RawSyntax.missingToken(.comma),
+  public static func makeFunctionType(leftParen: TokenSyntax, arguments: TupleTypeElementListSyntax, rightParen: TokenSyntax, throwsOrRethrowsKeyword: TokenSyntax?, arrow: TokenSyntax, returnType: TypeSyntax) -> FunctionTypeSyntax {
+    let data = SyntaxData(raw: .node(.functionType, [
+      leftParen.data.raw,
+      arguments.data.raw,
+      rightParen.data.raw,
+      throwsOrRethrowsKeyword?.data.raw ?? RawSyntax.missingToken(.throwsKeyword),
+      arrow.data.raw,
+      returnType.data.raw,
     ], .present))
-    return TupleTypeElementSyntax(root: data, data: data)
+    return FunctionTypeSyntax(root: data, data: data)
   }
 
-  public static func makeBlankTupleTypeElement() -> TupleTypeElementSyntax {
-    let data = SyntaxData(raw: .node(.tupleTypeElement, [
-      RawSyntax.missingToken(.identifier("")),
-      RawSyntax.missingToken(.colon),
-      RawSyntax.missing(.typeAnnotation),
-      RawSyntax.missingToken(.comma),
-    ], .present))
-    return TupleTypeElementSyntax(root: data, data: data)
-  }
-  public static func makeArrayType(leftSquareBracket: TokenSyntax, elementType: TypeSyntax, rightSquareBracket: TokenSyntax) -> ArrayTypeSyntax {
-    let data = SyntaxData(raw: .node(.arrayType, [
-      leftSquareBracket.data.raw,
-      elementType.data.raw,
-      rightSquareBracket.data.raw,
-    ], .present))
-    return ArrayTypeSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankArrayType() -> ArrayTypeSyntax {
-    let data = SyntaxData(raw: .node(.arrayType, [
-      RawSyntax.missingToken(.leftSquareBracket),
+  public static func makeBlankFunctionType() -> FunctionTypeSyntax {
+    let data = SyntaxData(raw: .node(.functionType, [
+      RawSyntax.missingToken(.leftParen),
+      RawSyntax.missing(.tupleTypeElementList),
+      RawSyntax.missingToken(.rightParen),
+      RawSyntax.missingToken(.throwsKeyword),
+      RawSyntax.missingToken(.arrow),
       RawSyntax.missing(.type),
-      RawSyntax.missingToken(.rightSquareBracket),
     ], .present))
-    return ArrayTypeSyntax(root: data, data: data)
+    return FunctionTypeSyntax(root: data, data: data)
   }
-  public static func makeTypeAnnotation(attributes: AttributeListSyntax, inOutKeyword: TokenSyntax?, type: TypeSyntax) -> TypeAnnotationSyntax {
-    let data = SyntaxData(raw: .node(.typeAnnotation, [
-      attributes.data.raw,
-      inOutKeyword?.data.raw ?? RawSyntax.missingToken(.inoutKeyword),
-      type.data.raw,
+  public static func makeAttributedType(specifier: TokenSyntax?, attributes: AttributeListSyntax?, baseType: TypeSyntax) -> AttributedTypeSyntax {
+    let data = SyntaxData(raw: .node(.attributedType, [
+      specifier?.data.raw ?? RawSyntax.missingToken(.unknown("")),
+      attributes?.data.raw ?? RawSyntax.missing(.attributeList),
+      baseType.data.raw,
     ], .present))
-    return TypeAnnotationSyntax(root: data, data: data)
+    return AttributedTypeSyntax(root: data, data: data)
   }
 
-  public static func makeBlankTypeAnnotation() -> TypeAnnotationSyntax {
-    let data = SyntaxData(raw: .node(.typeAnnotation, [
+  public static func makeBlankAttributedType() -> AttributedTypeSyntax {
+    let data = SyntaxData(raw: .node(.attributedType, [
+      RawSyntax.missingToken(.unknown("")),
       RawSyntax.missing(.attributeList),
-      RawSyntax.missingToken(.inoutKeyword),
       RawSyntax.missing(.type),
     ], .present))
-    return TypeAnnotationSyntax(root: data, data: data)
-  }
-  public static func makeProtocolCompositionElementList(
-    _ elements: [ProtocolCompositionElementSyntax]) -> ProtocolCompositionElementListSyntax {
-    let data = SyntaxData(raw: .node(.protocolCompositionElementList,
-                                     elements.map { $0.data.raw }, .present))
-    return ProtocolCompositionElementListSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankProtocolCompositionElementList() -> ProtocolCompositionElementListSyntax {
-    let data = SyntaxData(raw: .node(.protocolCompositionElementList, [
-    ], .present))
-    return ProtocolCompositionElementListSyntax(root: data, data: data)
-  }
-  public static func makeTupleTypeElementList(
-    _ elements: [TupleTypeElementSyntax]) -> TupleTypeElementListSyntax {
-    let data = SyntaxData(raw: .node(.tupleTypeElementList,
-                                     elements.map { $0.data.raw }, .present))
-    return TupleTypeElementListSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankTupleTypeElementList() -> TupleTypeElementListSyntax {
-    let data = SyntaxData(raw: .node(.tupleTypeElementList, [
-    ], .present))
-    return TupleTypeElementListSyntax(root: data, data: data)
-  }
-  public static func makeImplicitlyUnwrappedOptionalType(valueType: TypeSyntax, exclamationMark: TokenSyntax) -> ImplicitlyUnwrappedOptionalTypeSyntax {
-    let data = SyntaxData(raw: .node(.implicitlyUnwrappedOptionalType, [
-      valueType.data.raw,
-      exclamationMark.data.raw,
-    ], .present))
-    return ImplicitlyUnwrappedOptionalTypeSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankImplicitlyUnwrappedOptionalType() -> ImplicitlyUnwrappedOptionalTypeSyntax {
-    let data = SyntaxData(raw: .node(.implicitlyUnwrappedOptionalType, [
-      RawSyntax.missing(.type),
-      RawSyntax.missingToken(.exclamationMark),
-    ], .present))
-    return ImplicitlyUnwrappedOptionalTypeSyntax(root: data, data: data)
-  }
-  public static func makeProtocolCompositionElement(protocolType: TypeIdentifierSyntax, ampersand: TokenSyntax?) -> ProtocolCompositionElementSyntax {
-    let data = SyntaxData(raw: .node(.protocolCompositionElement, [
-      protocolType.data.raw,
-      ampersand?.data.raw ?? RawSyntax.missingToken(.ampersand),
-    ], .present))
-    return ProtocolCompositionElementSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankProtocolCompositionElement() -> ProtocolCompositionElementSyntax {
-    let data = SyntaxData(raw: .node(.protocolCompositionElement, [
-      RawSyntax.missing(.typeIdentifier),
-      RawSyntax.missingToken(.ampersand),
-    ], .present))
-    return ProtocolCompositionElementSyntax(root: data, data: data)
+    return AttributedTypeSyntax(root: data, data: data)
   }
   public static func makeGenericArgumentList(
     _ elements: [GenericArgumentSyntax]) -> GenericArgumentListSyntax {
@@ -1562,89 +2969,24 @@ public enum SyntaxFactory {
     ], .present))
     return GenericArgumentClauseSyntax(root: data, data: data)
   }
-  public static func makeFunctionTypeArgument(externalName: TokenSyntax?, localName: TokenSyntax?, colon: TokenSyntax?, typeAnnotation: TypeAnnotationSyntax, trailingComma: TokenSyntax?) -> FunctionTypeArgumentSyntax {
-    let data = SyntaxData(raw: .node(.functionTypeArgument, [
-      externalName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
-      localName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
-      colon?.data.raw ?? RawSyntax.missingToken(.colon),
-      typeAnnotation.data.raw,
-      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
+  public static func makeTypeAnnotation(colon: TokenSyntax, type: TypeSyntax) -> TypeAnnotationSyntax {
+    let data = SyntaxData(raw: .node(.typeAnnotation, [
+      colon.data.raw,
+      type.data.raw,
     ], .present))
-    return FunctionTypeArgumentSyntax(root: data, data: data)
+    return TypeAnnotationSyntax(root: data, data: data)
   }
 
-  public static func makeBlankFunctionTypeArgument() -> FunctionTypeArgumentSyntax {
-    let data = SyntaxData(raw: .node(.functionTypeArgument, [
-      RawSyntax.missingToken(.identifier("")),
-      RawSyntax.missingToken(.identifier("")),
+  public static func makeBlankTypeAnnotation() -> TypeAnnotationSyntax {
+    let data = SyntaxData(raw: .node(.typeAnnotation, [
       RawSyntax.missingToken(.colon),
-      RawSyntax.missing(.typeAnnotation),
-      RawSyntax.missingToken(.comma),
-    ], .present))
-    return FunctionTypeArgumentSyntax(root: data, data: data)
-  }
-  public static func makeOptionalType(valueType: TypeSyntax, questionMark: TokenSyntax) -> OptionalTypeSyntax {
-    let data = SyntaxData(raw: .node(.optionalType, [
-      valueType.data.raw,
-      questionMark.data.raw,
-    ], .present))
-    return OptionalTypeSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankOptionalType() -> OptionalTypeSyntax {
-    let data = SyntaxData(raw: .node(.optionalType, [
       RawSyntax.missing(.type),
-      RawSyntax.missingToken(.postfixQuestionMark),
     ], .present))
-    return OptionalTypeSyntax(root: data, data: data)
+    return TypeAnnotationSyntax(root: data, data: data)
   }
-  public static func makeTypeIdentifier(typeName: TokenSyntax, genericArgumentClause: GenericArgumentClauseSyntax?, period: TokenSyntax?, typeIdentifier: TypeIdentifierSyntax?) -> TypeIdentifierSyntax {
-    let data = SyntaxData(raw: .node(.typeIdentifier, [
-      typeName.data.raw,
-      genericArgumentClause?.data.raw ?? RawSyntax.missing(.genericArgumentClause),
-      period?.data.raw ?? RawSyntax.missingToken(.period),
-      typeIdentifier?.data.raw ?? RawSyntax.missing(.typeIdentifier),
-    ], .present))
-    return TypeIdentifierSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankTypeIdentifier() -> TypeIdentifierSyntax {
-    let data = SyntaxData(raw: .node(.typeIdentifier, [
-      RawSyntax.missingToken(.identifier("")),
-      RawSyntax.missing(.genericArgumentClause),
-      RawSyntax.missingToken(.period),
-      RawSyntax.missing(.typeIdentifier),
-    ], .present))
-    return TypeIdentifierSyntax(root: data, data: data)
-  }
-  public static func makeFunctionTypeArgumentList(
-    _ elements: [FunctionTypeArgumentSyntax]) -> FunctionTypeArgumentListSyntax {
-    let data = SyntaxData(raw: .node(.functionTypeArgumentList,
-                                     elements.map { $0.data.raw }, .present))
-    return FunctionTypeArgumentListSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankFunctionTypeArgumentList() -> FunctionTypeArgumentListSyntax {
-    let data = SyntaxData(raw: .node(.functionTypeArgumentList, [
-    ], .present))
-    return FunctionTypeArgumentListSyntax(root: data, data: data)
-  }
-  public static func makeProtocolCompositionType(elements: ProtocolCompositionElementListSyntax) -> ProtocolCompositionTypeSyntax {
-    let data = SyntaxData(raw: .node(.protocolCompositionType, [
-      elements.data.raw,
-    ], .present))
-    return ProtocolCompositionTypeSyntax(root: data, data: data)
-  }
-
-  public static func makeBlankProtocolCompositionType() -> ProtocolCompositionTypeSyntax {
-    let data = SyntaxData(raw: .node(.protocolCompositionType, [
-      RawSyntax.missing(.protocolCompositionElementList),
-    ], .present))
-    return ProtocolCompositionTypeSyntax(root: data, data: data)
-  }
-  public static func makeEnumCasePattern(typeIdentifier: TypeIdentifierSyntax?, period: TokenSyntax, caseName: TokenSyntax, associatedTuple: TuplePatternSyntax?) -> EnumCasePatternSyntax {
+  public static func makeEnumCasePattern(type: TypeSyntax?, period: TokenSyntax, caseName: TokenSyntax, associatedTuple: TuplePatternSyntax?) -> EnumCasePatternSyntax {
     let data = SyntaxData(raw: .node(.enumCasePattern, [
-      typeIdentifier?.data.raw ?? RawSyntax.missing(.typeIdentifier),
+      type?.data.raw ?? RawSyntax.missing(.type),
       period.data.raw,
       caseName.data.raw,
       associatedTuple?.data.raw ?? RawSyntax.missing(.tuplePattern),
@@ -1654,7 +2996,7 @@ public enum SyntaxFactory {
 
   public static func makeBlankEnumCasePattern() -> EnumCasePatternSyntax {
     let data = SyntaxData(raw: .node(.enumCasePattern, [
-      RawSyntax.missing(.typeIdentifier),
+      RawSyntax.missing(.type),
       RawSyntax.missingToken(.period),
       RawSyntax.missingToken(.identifier("")),
       RawSyntax.missing(.tuplePattern),
@@ -1676,9 +3018,9 @@ public enum SyntaxFactory {
     ], .present))
     return IsTypePatternSyntax(root: data, data: data)
   }
-  public static func makeOptionalPattern(identifier: TokenSyntax, questionMark: TokenSyntax) -> OptionalPatternSyntax {
+  public static func makeOptionalPattern(subPattern: PatternSyntax, questionMark: TokenSyntax) -> OptionalPatternSyntax {
     let data = SyntaxData(raw: .node(.optionalPattern, [
-      identifier.data.raw,
+      subPattern.data.raw,
       questionMark.data.raw,
     ], .present))
     return OptionalPatternSyntax(root: data, data: data)
@@ -1686,15 +3028,14 @@ public enum SyntaxFactory {
 
   public static func makeBlankOptionalPattern() -> OptionalPatternSyntax {
     let data = SyntaxData(raw: .node(.optionalPattern, [
-      RawSyntax.missingToken(.identifier("")),
+      RawSyntax.missing(.pattern),
       RawSyntax.missingToken(.postfixQuestionMark),
     ], .present))
     return OptionalPatternSyntax(root: data, data: data)
   }
-  public static func makeIdentifierPattern(identifier: TokenSyntax, typeAnnotation: TypeAnnotationSyntax?) -> IdentifierPatternSyntax {
+  public static func makeIdentifierPattern(identifier: TokenSyntax) -> IdentifierPatternSyntax {
     let data = SyntaxData(raw: .node(.identifierPattern, [
       identifier.data.raw,
-      typeAnnotation?.data.raw ?? RawSyntax.missing(.typeAnnotation),
     ], .present))
     return IdentifierPatternSyntax(root: data, data: data)
   }
@@ -1702,7 +3043,6 @@ public enum SyntaxFactory {
   public static func makeBlankIdentifierPattern() -> IdentifierPatternSyntax {
     let data = SyntaxData(raw: .node(.identifierPattern, [
       RawSyntax.missingToken(.identifier("")),
-      RawSyntax.missing(.typeAnnotation),
     ], .present))
     return IdentifierPatternSyntax(root: data, data: data)
   }
@@ -1723,12 +3063,11 @@ public enum SyntaxFactory {
     ], .present))
     return AsTypePatternSyntax(root: data, data: data)
   }
-  public static func makeTuplePattern(openParen: TokenSyntax, elements: TuplePatternElementListSyntax, closeParen: TokenSyntax, typeAnnotation: TypeAnnotationSyntax?) -> TuplePatternSyntax {
+  public static func makeTuplePattern(leftParen: TokenSyntax, elements: TuplePatternElementListSyntax, rightParen: TokenSyntax) -> TuplePatternSyntax {
     let data = SyntaxData(raw: .node(.tuplePattern, [
-      openParen.data.raw,
+      leftParen.data.raw,
       elements.data.raw,
-      closeParen.data.raw,
-      typeAnnotation?.data.raw ?? RawSyntax.missing(.typeAnnotation),
+      rightParen.data.raw,
     ], .present))
     return TuplePatternSyntax(root: data, data: data)
   }
@@ -1738,7 +3077,6 @@ public enum SyntaxFactory {
       RawSyntax.missingToken(.leftParen),
       RawSyntax.missing(.tuplePatternElementList),
       RawSyntax.missingToken(.rightParen),
-      RawSyntax.missing(.typeAnnotation),
     ], .present))
     return TuplePatternSyntax(root: data, data: data)
   }
@@ -1757,12 +3095,12 @@ public enum SyntaxFactory {
     ], .present))
     return WildcardPatternSyntax(root: data, data: data)
   }
-  public static func makeTuplePatternElement(labelName: TokenSyntax?, labelColon: TokenSyntax?, pattern: PatternSyntax, comma: TokenSyntax?) -> TuplePatternElementSyntax {
+  public static func makeTuplePatternElement(labelName: TokenSyntax?, labelColon: TokenSyntax?, pattern: PatternSyntax, trailingComma: TokenSyntax?) -> TuplePatternElementSyntax {
     let data = SyntaxData(raw: .node(.tuplePatternElement, [
       labelName?.data.raw ?? RawSyntax.missingToken(.identifier("")),
       labelColon?.data.raw ?? RawSyntax.missingToken(.colon),
       pattern.data.raw,
-      comma?.data.raw ?? RawSyntax.missingToken(.comma),
+      trailingComma?.data.raw ?? RawSyntax.missingToken(.comma),
     ], .present))
     return TuplePatternElementSyntax(root: data, data: data)
   }
@@ -2227,9 +3565,45 @@ public enum SyntaxFactory {
                      leadingTrivia: leadingTrivia,
                      trailingTrivia: trailingTrivia)
   }
+  public static func makePoundDsohandleKeyword(leadingTrivia: Trivia = [],
+    trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.poundDsohandleKeyword, presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
   public static func makePoundFunctionKeyword(leadingTrivia: Trivia = [],
     trailingTrivia: Trivia = []) -> TokenSyntax {
     return makeToken(.poundFunctionKeyword, presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
+  public static func makePoundSelectorKeyword(leadingTrivia: Trivia = [],
+    trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.poundSelectorKeyword, presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
+  public static func makePoundKeyPathKeyword(leadingTrivia: Trivia = [],
+    trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.poundKeyPathKeyword, presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
+  public static func makePoundColorLiteralKeyword(leadingTrivia: Trivia = [],
+    trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.poundColorLiteralKeyword, presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
+  public static func makePoundFileLiteralKeyword(leadingTrivia: Trivia = [],
+    trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.poundFileLiteralKeyword, presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
+  public static func makePoundImageLiteralKeyword(leadingTrivia: Trivia = [],
+    trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.poundImageLiteralKeyword, presence: .present,
                      leadingTrivia: leadingTrivia,
                      trailingTrivia: trailingTrivia)
   }
@@ -2329,9 +3703,9 @@ public enum SyntaxFactory {
                      leadingTrivia: leadingTrivia,
                      trailingTrivia: trailingTrivia)
   }
-  public static func makeAmpersandToken(leadingTrivia: Trivia = [],
+  public static func makePrefixAmpersandToken(leadingTrivia: Trivia = [],
     trailingTrivia: Trivia = []) -> TokenSyntax {
-    return makeToken(.ampersand, presence: .present,
+    return makeToken(.prefixAmpersand, presence: .present,
                      leadingTrivia: leadingTrivia,
                      trailingTrivia: trailingTrivia)
   }
@@ -2350,6 +3724,36 @@ public enum SyntaxFactory {
   public static func makeExclamationMarkToken(leadingTrivia: Trivia = [],
     trailingTrivia: Trivia = []) -> TokenSyntax {
     return makeToken(.exclamationMark, presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
+  public static func makeBackslashToken(leadingTrivia: Trivia = [],
+    trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.backslash, presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
+  public static func makeStringInterpolationAnchorToken(leadingTrivia: Trivia = [],
+    trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.stringInterpolationAnchor, presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
+  public static func makeStringQuoteToken(leadingTrivia: Trivia = [],
+    trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.stringQuote, presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
+  public static func makeMultilineStringQuoteToken(leadingTrivia: Trivia = [],
+    trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.multilineStringQuote, presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
+  public static func makeStringSegment(_ text: String,
+    leadingTrivia: Trivia = [], trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.stringSegment(text), presence: .present,
                      leadingTrivia: leadingTrivia,
                      trailingTrivia: trailingTrivia)
   }
@@ -2407,6 +3811,18 @@ public enum SyntaxFactory {
                      leadingTrivia: leadingTrivia,
                      trailingTrivia: trailingTrivia)
   }
+  public static func makeContextualKeyword(_ text: String,
+    leadingTrivia: Trivia = [], trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.contextualKeyword(text), presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
+  public static func makeUnknown(_ text: String,
+    leadingTrivia: Trivia = [], trailingTrivia: Trivia = []) -> TokenSyntax {
+    return makeToken(.unknown(text), presence: .present,
+                     leadingTrivia: leadingTrivia,
+                     trailingTrivia: trailingTrivia)
+  }
 
 /// MARK: Convenience APIs
 
@@ -2416,47 +3832,44 @@ public enum SyntaxFactory {
                          rightParen: makeRightParenToken())
   }
 
-  public static func makeTupleTypeElement(label: TokenSyntax?,
+  public static func makeTupleTypeElement(name: TokenSyntax?,
     colon: TokenSyntax?, type: TypeSyntax,
-    comma: TokenSyntax?) -> TupleTypeElementSyntax {
-    let annotation = makeTypeAnnotation(attributes: makeBlankAttributeList(),
-                                        inOutKeyword: nil,
-                                        type: type)
-    return makeTupleTypeElement(label: label, colon: colon, 
-                                typeAnnotation: annotation,
-                                comma: comma)
+    trailingComma: TokenSyntax?) -> TupleTypeElementSyntax {
+    return makeTupleTypeElement(inOut: nil, name: name, secondName: nil,
+                                colon: colon, type: type, ellipsis: nil,
+                                initializer: nil, trailingComma: trailingComma)
   }
 
   public static func makeTupleTypeElement(type: TypeSyntax,
-    comma: TokenSyntax?) -> TupleTypeElementSyntax  {
-    return makeTupleTypeElement(label: nil, colon: nil, 
-                                type: type, comma: comma)
+    trailingComma: TokenSyntax?) -> TupleTypeElementSyntax  {
+    return makeTupleTypeElement(name: nil, colon: nil, 
+                                type: type, trailingComma: trailingComma)
   }
 
-  public static func makeGenericParameter(type: TypeIdentifierSyntax,
+  public static func makeGenericParameter(name: TokenSyntax,
       trailingComma: TokenSyntax) -> GenericParameterSyntax {
-    return makeGenericParameter(typeIdentifier: type, colon: nil,
+    return makeGenericParameter(attributes: nil, name: name, colon: nil,
                                 inheritedType: nil,
                                 trailingComma: trailingComma)
   }
 
-  public static func makeTypeIdentifier(_ typeName: String,
+  public static func makeTypeIdentifier(_ name: String,
     leadingTrivia: Trivia = [],
-    trailingTrivia: Trivia = []) -> TypeIdentifierSyntax {
-    let identifier = makeIdentifier(typeName, leadingTrivia: leadingTrivia, 
+    trailingTrivia: Trivia = []) -> TypeSyntax {
+    let identifier = makeIdentifier(name, leadingTrivia: leadingTrivia, 
                                     trailingTrivia: trailingTrivia)
-    return makeTypeIdentifier(typeName:identifier, genericArgumentClause: nil,
-                              period: nil, typeIdentifier: nil)
+    return makeSimpleTypeIdentifier(name: identifier,
+                                    genericArgumentClause: nil)
   }
 
   public static func makeAnyTypeIdentifier(leadingTrivia: Trivia = [],
-    trailingTrivia: Trivia = []) -> TypeIdentifierSyntax {
+    trailingTrivia: Trivia = []) -> TypeSyntax {
     return makeTypeIdentifier("Any", leadingTrivia: leadingTrivia, 
                               trailingTrivia: trailingTrivia)
   }
 
   public static func makeSelfTypeIdentifier(leadingTrivia: Trivia = [],
-    trailingTrivia: Trivia = []) -> TypeIdentifierSyntax {
+    trailingTrivia: Trivia = []) -> TypeSyntax {
     return makeTypeIdentifier("Self", leadingTrivia: leadingTrivia, 
                               trailingTrivia: trailingTrivia)
   }
@@ -2492,10 +3905,10 @@ public enum SyntaxFactory {
 
   public static func makeVariableExpr(_ text: String,
     leadingTrivia: Trivia = [],
-    trailingTrivia: Trivia = []) -> SymbolicReferenceExprSyntax {
+    trailingTrivia: Trivia = []) -> IdentifierExprSyntax {
     let string = makeIdentifier(text,
       leadingTrivia: leadingTrivia, trailingTrivia: trailingTrivia)
-    return makeSymbolicReferenceExpr(identifier: string,
-                                     genericArgumentClause: nil)
+    return makeIdentifierExpr(identifier: string,
+                              declNameArguments: nil)
   }
 }

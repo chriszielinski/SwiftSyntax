@@ -7,68 +7,92 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		OBJ_37 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
-		OBJ_45 /* SwiftSyntax.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "SwiftSyntax::SwiftSyntax::Product" /* SwiftSyntax.framework */; };
-		OBJ_52 /* AtomicCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* AtomicCache.swift */; };
-		OBJ_53 /* RawSyntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* RawSyntax.swift */; };
-		OBJ_54 /* SourcePresence.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* SourcePresence.swift */; };
-		OBJ_55 /* SwiftSyntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* SwiftSyntax.swift */; };
-		OBJ_56 /* SwiftcInvocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* SwiftcInvocation.swift */; };
-		OBJ_57 /* Syntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* Syntax.swift */; };
-		OBJ_58 /* SyntaxBuilders.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* SyntaxBuilders.swift */; };
-		OBJ_59 /* SyntaxChildren.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* SyntaxChildren.swift */; };
-		OBJ_60 /* SyntaxCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* SyntaxCollection.swift */; };
-		OBJ_61 /* SyntaxData.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_18 /* SyntaxData.swift */; };
-		OBJ_62 /* SyntaxFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* SyntaxFactory.swift */; };
-		OBJ_63 /* SyntaxKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_20 /* SyntaxKind.swift */; };
-		OBJ_64 /* SyntaxNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* SyntaxNodes.swift */; };
-		OBJ_65 /* SyntaxRewriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_22 /* SyntaxRewriter.swift */; };
-		OBJ_66 /* TokenKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_23 /* TokenKind.swift */; };
-		OBJ_67 /* Trivia.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_24 /* Trivia.swift */; };
+		14B3F21E205DD76D00E95A52 /* PrintingDiagnosticConsumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F208205DD76B00E95A52 /* PrintingDiagnosticConsumer.swift */; };
+		14B3F21F205DD76D00E95A52 /* SyntaxNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F209205DD76B00E95A52 /* SyntaxNodes.swift */; };
+		14B3F220205DD76D00E95A52 /* SyntaxCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F20A205DD76B00E95A52 /* SyntaxCollections.swift */; };
+		14B3F222205DD76D00E95A52 /* Trivia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F20C205DD76B00E95A52 /* Trivia.swift */; };
+		14B3F223205DD76D00E95A52 /* AtomicCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F20D205DD76B00E95A52 /* AtomicCache.swift */; };
+		14B3F224205DD76D00E95A52 /* SwiftcInvocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F20E205DD76B00E95A52 /* SwiftcInvocation.swift */; };
+		14B3F225205DD76D00E95A52 /* JSONDiagnosticConsumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F20F205DD76B00E95A52 /* JSONDiagnosticConsumer.swift */; };
+		14B3F226205DD76D00E95A52 /* SyntaxBuilders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F210205DD76B00E95A52 /* SyntaxBuilders.swift */; };
+		14B3F227205DD76D00E95A52 /* SyntaxFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F211205DD76B00E95A52 /* SyntaxFactory.swift */; };
+		14B3F228205DD76D00E95A52 /* SourcePresence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F212205DD76C00E95A52 /* SourcePresence.swift */; };
+		14B3F229205DD76D00E95A52 /* SyntaxRewriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F213205DD76C00E95A52 /* SyntaxRewriter.swift */; };
+		14B3F22A205DD76D00E95A52 /* DiagnosticEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F214205DD76C00E95A52 /* DiagnosticEngine.swift */; };
+		14B3F22B205DD76D00E95A52 /* SyntaxData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F215205DD76C00E95A52 /* SyntaxData.swift */; };
+		14B3F22C205DD76D00E95A52 /* Diagnostic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F216205DD76C00E95A52 /* Diagnostic.swift */; };
+		14B3F22D205DD76D00E95A52 /* DiagnosticConsumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F217205DD76C00E95A52 /* DiagnosticConsumer.swift */; };
+		14B3F22E205DD76D00E95A52 /* SwiftSyntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F218205DD76C00E95A52 /* SwiftSyntax.swift */; };
+		14B3F22F205DD76D00E95A52 /* Syntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F219205DD76C00E95A52 /* Syntax.swift */; };
+		14B3F230205DD76D00E95A52 /* RawSyntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F21A205DD76C00E95A52 /* RawSyntax.swift */; };
+		14B3F231205DD76D00E95A52 /* SyntaxKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F21B205DD76C00E95A52 /* SyntaxKind.swift */; };
+		14B3F232205DD76D00E95A52 /* SyntaxChildren.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F21C205DD76C00E95A52 /* SyntaxChildren.swift */; };
+		14B3F233205DD76D00E95A52 /* TokenKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B3F21D205DD76D00E95A52 /* TokenKind.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		D6BAA1E61F60FDA300A9A524 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = OBJ_1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = "SwiftSyntax::SwiftSyntax";
-			remoteInfo = SwiftSyntax;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
-		OBJ_10 /* RawSyntax.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawSyntax.swift; sourceTree = "<group>"; };
-		OBJ_11 /* SourcePresence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourcePresence.swift; sourceTree = "<group>"; };
-		OBJ_12 /* SwiftSyntax.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftSyntax.swift; sourceTree = "<group>"; };
-		OBJ_13 /* SwiftcInvocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftcInvocation.swift; sourceTree = "<group>"; };
-		OBJ_14 /* Syntax.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Syntax.swift; sourceTree = "<group>"; };
-		OBJ_15 /* SyntaxBuilders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxBuilders.swift; sourceTree = "<group>"; };
-		OBJ_16 /* SyntaxChildren.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxChildren.swift; sourceTree = "<group>"; };
-		OBJ_17 /* SyntaxCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxCollection.swift; sourceTree = "<group>"; };
-		OBJ_18 /* SyntaxData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxData.swift; sourceTree = "<group>"; };
-		OBJ_19 /* SyntaxFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxFactory.swift; sourceTree = "<group>"; };
-		OBJ_20 /* SyntaxKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxKind.swift; sourceTree = "<group>"; };
-		OBJ_21 /* SyntaxNodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxNodes.swift; sourceTree = "<group>"; };
-		OBJ_22 /* SyntaxRewriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxRewriter.swift; sourceTree = "<group>"; };
-		OBJ_23 /* TokenKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenKind.swift; sourceTree = "<group>"; };
-		OBJ_24 /* Trivia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trivia.swift; sourceTree = "<group>"; };
-		OBJ_28 /* utils */ = {isa = PBXFileReference; lastKnownFileType = folder; path = utils; sourceTree = SOURCE_ROOT; };
+		14B3F208205DD76B00E95A52 /* PrintingDiagnosticConsumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrintingDiagnosticConsumer.swift; sourceTree = "<group>"; };
+		14B3F209205DD76B00E95A52 /* SyntaxNodes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyntaxNodes.swift; sourceTree = "<group>"; };
+		14B3F20A205DD76B00E95A52 /* SyntaxCollections.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyntaxCollections.swift; sourceTree = "<group>"; };
+		14B3F20B205DD76B00E95A52 /* SyntaxCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyntaxCollection.swift; sourceTree = "<group>"; };
+		14B3F20C205DD76B00E95A52 /* Trivia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Trivia.swift; sourceTree = "<group>"; };
+		14B3F20D205DD76B00E95A52 /* AtomicCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AtomicCache.swift; sourceTree = "<group>"; };
+		14B3F20E205DD76B00E95A52 /* SwiftcInvocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftcInvocation.swift; sourceTree = "<group>"; };
+		14B3F20F205DD76B00E95A52 /* JSONDiagnosticConsumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONDiagnosticConsumer.swift; sourceTree = "<group>"; };
+		14B3F210205DD76B00E95A52 /* SyntaxBuilders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyntaxBuilders.swift; sourceTree = "<group>"; };
+		14B3F211205DD76B00E95A52 /* SyntaxFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyntaxFactory.swift; sourceTree = "<group>"; };
+		14B3F212205DD76C00E95A52 /* SourcePresence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SourcePresence.swift; sourceTree = "<group>"; };
+		14B3F213205DD76C00E95A52 /* SyntaxRewriter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyntaxRewriter.swift; sourceTree = "<group>"; };
+		14B3F214205DD76C00E95A52 /* DiagnosticEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiagnosticEngine.swift; sourceTree = "<group>"; };
+		14B3F215205DD76C00E95A52 /* SyntaxData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyntaxData.swift; sourceTree = "<group>"; };
+		14B3F216205DD76C00E95A52 /* Diagnostic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Diagnostic.swift; sourceTree = "<group>"; };
+		14B3F217205DD76C00E95A52 /* DiagnosticConsumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiagnosticConsumer.swift; sourceTree = "<group>"; };
+		14B3F218205DD76C00E95A52 /* SwiftSyntax.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSyntax.swift; sourceTree = "<group>"; };
+		14B3F219205DD76C00E95A52 /* Syntax.swift */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = Syntax.swift; sourceTree = "<group>"; usesTabs = 0; };
+		14B3F21A205DD76C00E95A52 /* RawSyntax.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RawSyntax.swift; sourceTree = "<group>"; };
+		14B3F21B205DD76C00E95A52 /* SyntaxKind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyntaxKind.swift; sourceTree = "<group>"; };
+		14B3F21C205DD76C00E95A52 /* SyntaxChildren.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyntaxChildren.swift; sourceTree = "<group>"; };
+		14B3F21D205DD76D00E95A52 /* TokenKind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenKind.swift; sourceTree = "<group>"; };
+		14B3F234205DDD6500E95A52 /* SyntaxNodes.swift.gyb */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = text; path = SyntaxNodes.swift.gyb; sourceTree = "<group>"; };
+		14DC4E7C206C56B6007061F9 /* run-gyb.bash */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "run-gyb.bash"; sourceTree = "<group>"; };
+		14DC4E7D206C56B6007061F9 /* gyb.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = gyb.py; sourceTree = "<group>"; };
+		14DC4E7E206C56B6007061F9 /* gyb */ = {isa = PBXFileReference; lastKnownFileType = text; path = gyb; sourceTree = "<group>"; };
+		14DC4E7F206C56B6007061F9 /* gyb.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = gyb.pyc; sourceTree = "<group>"; };
+		14DC4E81206C56B6007061F9 /* CommonNodes.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = CommonNodes.py; sourceTree = "<group>"; };
+		14DC4E82206C56B6007061F9 /* GenericNodes.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = GenericNodes.pyc; sourceTree = "<group>"; };
+		14DC4E83206C56B6007061F9 /* PatternNodes.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = PatternNodes.py; sourceTree = "<group>"; };
+		14DC4E84206C56B6007061F9 /* Token.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Token.pyc; sourceTree = "<group>"; };
+		14DC4E85206C56B6007061F9 /* Token.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = Token.py; sourceTree = "<group>"; };
+		14DC4E86206C56B6007061F9 /* kinds.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = kinds.py; sourceTree = "<group>"; };
+		14DC4E87206C56B6007061F9 /* TypeNodes.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = TypeNodes.pyc; sourceTree = "<group>"; };
+		14DC4E88206C56B6007061F9 /* __init__.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
+		14DC4E89206C56B6007061F9 /* Traits.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Traits.pyc; sourceTree = "<group>"; };
+		14DC4E8A206C56B6007061F9 /* ExprNodes.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = ExprNodes.pyc; sourceTree = "<group>"; };
+		14DC4E8B206C56B6007061F9 /* kinds.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = kinds.pyc; sourceTree = "<group>"; };
+		14DC4E8C206C56B6007061F9 /* PatternNodes.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = PatternNodes.pyc; sourceTree = "<group>"; };
+		14DC4E8D206C56B6007061F9 /* AttributeNodes.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = AttributeNodes.pyc; sourceTree = "<group>"; };
+		14DC4E8E206C56B6007061F9 /* Trivia.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Trivia.pyc; sourceTree = "<group>"; };
+		14DC4E8F206C56B6007061F9 /* Trivia.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = Trivia.py; sourceTree = "<group>"; };
+		14DC4E90206C56B6007061F9 /* ExprNodes.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = ExprNodes.py; sourceTree = "<group>"; };
+		14DC4E91206C56B6007061F9 /* StmtNodes.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = StmtNodes.pyc; sourceTree = "<group>"; };
+		14DC4E92206C56B6007061F9 /* Child.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = Child.py; sourceTree = "<group>"; };
+		14DC4E93206C56B6007061F9 /* __init__.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = __init__.pyc; sourceTree = "<group>"; };
+		14DC4E94206C56B6007061F9 /* Node.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Node.pyc; sourceTree = "<group>"; };
+		14DC4E95206C56B6007061F9 /* Traits.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = Traits.py; sourceTree = "<group>"; };
+		14DC4E96206C56B6007061F9 /* Child.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = Child.pyc; sourceTree = "<group>"; };
+		14DC4E97206C56B6007061F9 /* DeclNodes.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = DeclNodes.pyc; sourceTree = "<group>"; };
+		14DC4E98206C56B6007061F9 /* GenericNodes.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = GenericNodes.py; sourceTree = "<group>"; };
+		14DC4E99206C56B6007061F9 /* TypeNodes.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = TypeNodes.py; sourceTree = "<group>"; };
+		14DC4E9A206C56B6007061F9 /* Node.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = Node.py; sourceTree = "<group>"; };
+		14DC4E9B206C56B6007061F9 /* DeclNodes.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = DeclNodes.py; sourceTree = "<group>"; };
+		14DC4E9C206C56B6007061F9 /* CommonNodes.pyc */ = {isa = PBXFileReference; lastKnownFileType = file; path = CommonNodes.pyc; sourceTree = "<group>"; };
+		14DC4E9D206C56B6007061F9 /* AttributeNodes.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = AttributeNodes.py; sourceTree = "<group>"; };
+		14DC4E9E206C56B6007061F9 /* StmtNodes.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = StmtNodes.py; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		OBJ_9 /* AtomicCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtomicCache.swift; sourceTree = "<group>"; };
 		"SwiftSyntax::SwiftSyntax::Product" /* SwiftSyntax.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftSyntax.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		"SwiftSyntax::format-example::Product" /* format-example */ = {isa = PBXFileReference; lastKnownFileType = text; path = "format-example"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		OBJ_44 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 0;
-			files = (
-				OBJ_45 /* SwiftSyntax.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		OBJ_68 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
@@ -79,6 +103,63 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		14DC4E79206C550D007061F9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				"SwiftSyntax::SwiftSyntax::Product" /* SwiftSyntax.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		14DC4E7B206C56B6007061F9 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				14DC4E7C206C56B6007061F9 /* run-gyb.bash */,
+				14DC4E7D206C56B6007061F9 /* gyb.py */,
+				14DC4E7E206C56B6007061F9 /* gyb */,
+				14DC4E7F206C56B6007061F9 /* gyb.pyc */,
+				14DC4E80206C56B6007061F9 /* gyb_syntax_support */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
+		14DC4E80206C56B6007061F9 /* gyb_syntax_support */ = {
+			isa = PBXGroup;
+			children = (
+				14DC4E81206C56B6007061F9 /* CommonNodes.py */,
+				14DC4E82206C56B6007061F9 /* GenericNodes.pyc */,
+				14DC4E83206C56B6007061F9 /* PatternNodes.py */,
+				14DC4E84206C56B6007061F9 /* Token.pyc */,
+				14DC4E85206C56B6007061F9 /* Token.py */,
+				14DC4E86206C56B6007061F9 /* kinds.py */,
+				14DC4E87206C56B6007061F9 /* TypeNodes.pyc */,
+				14DC4E88206C56B6007061F9 /* __init__.py */,
+				14DC4E89206C56B6007061F9 /* Traits.pyc */,
+				14DC4E8A206C56B6007061F9 /* ExprNodes.pyc */,
+				14DC4E8B206C56B6007061F9 /* kinds.pyc */,
+				14DC4E8C206C56B6007061F9 /* PatternNodes.pyc */,
+				14DC4E8D206C56B6007061F9 /* AttributeNodes.pyc */,
+				14DC4E8E206C56B6007061F9 /* Trivia.pyc */,
+				14DC4E8F206C56B6007061F9 /* Trivia.py */,
+				14DC4E90206C56B6007061F9 /* ExprNodes.py */,
+				14DC4E91206C56B6007061F9 /* StmtNodes.pyc */,
+				14DC4E92206C56B6007061F9 /* Child.py */,
+				14DC4E93206C56B6007061F9 /* __init__.pyc */,
+				14DC4E94206C56B6007061F9 /* Node.pyc */,
+				14DC4E95206C56B6007061F9 /* Traits.py */,
+				14DC4E96206C56B6007061F9 /* Child.pyc */,
+				14DC4E97206C56B6007061F9 /* DeclNodes.pyc */,
+				14DC4E98206C56B6007061F9 /* GenericNodes.py */,
+				14DC4E99206C56B6007061F9 /* TypeNodes.py */,
+				14DC4E9A206C56B6007061F9 /* Node.py */,
+				14DC4E9B206C56B6007061F9 /* DeclNodes.py */,
+				14DC4E9C206C56B6007061F9 /* CommonNodes.pyc */,
+				14DC4E9D206C56B6007061F9 /* AttributeNodes.py */,
+				14DC4E9E206C56B6007061F9 /* StmtNodes.py */,
+			);
+			path = gyb_syntax_support;
+			sourceTree = "<group>";
+		};
 		OBJ_27 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -86,23 +167,14 @@
 			name = Tests;
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_29 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				"SwiftSyntax::format-example::Product" /* format-example */,
-				"SwiftSyntax::SwiftSyntax::Product" /* SwiftSyntax.framework */,
-			);
-			name = Products;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
 				OBJ_27 /* Tests */,
-				OBJ_28 /* utils */,
-				OBJ_29 /* Products */,
+				14DC4E7B206C56B6007061F9 /* utils */,
+				14DC4E79206C550D007061F9 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -117,22 +189,29 @@
 		OBJ_8 /* SwiftSyntax */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_9 /* AtomicCache.swift */,
-				OBJ_10 /* RawSyntax.swift */,
-				OBJ_11 /* SourcePresence.swift */,
-				OBJ_12 /* SwiftSyntax.swift */,
-				OBJ_13 /* SwiftcInvocation.swift */,
-				OBJ_14 /* Syntax.swift */,
-				OBJ_15 /* SyntaxBuilders.swift */,
-				OBJ_16 /* SyntaxChildren.swift */,
-				OBJ_17 /* SyntaxCollection.swift */,
-				OBJ_18 /* SyntaxData.swift */,
-				OBJ_19 /* SyntaxFactory.swift */,
-				OBJ_20 /* SyntaxKind.swift */,
-				OBJ_21 /* SyntaxNodes.swift */,
-				OBJ_22 /* SyntaxRewriter.swift */,
-				OBJ_23 /* TokenKind.swift */,
-				OBJ_24 /* Trivia.swift */,
+				14B3F20D205DD76B00E95A52 /* AtomicCache.swift */,
+				14B3F216205DD76C00E95A52 /* Diagnostic.swift */,
+				14B3F217205DD76C00E95A52 /* DiagnosticConsumer.swift */,
+				14B3F214205DD76C00E95A52 /* DiagnosticEngine.swift */,
+				14B3F20F205DD76B00E95A52 /* JSONDiagnosticConsumer.swift */,
+				14B3F208205DD76B00E95A52 /* PrintingDiagnosticConsumer.swift */,
+				14B3F21A205DD76C00E95A52 /* RawSyntax.swift */,
+				14B3F212205DD76C00E95A52 /* SourcePresence.swift */,
+				14B3F20E205DD76B00E95A52 /* SwiftcInvocation.swift */,
+				14B3F218205DD76C00E95A52 /* SwiftSyntax.swift */,
+				14B3F219205DD76C00E95A52 /* Syntax.swift */,
+				14B3F210205DD76B00E95A52 /* SyntaxBuilders.swift */,
+				14B3F21C205DD76C00E95A52 /* SyntaxChildren.swift */,
+				14B3F20B205DD76B00E95A52 /* SyntaxCollection.swift */,
+				14B3F20A205DD76B00E95A52 /* SyntaxCollections.swift */,
+				14B3F215205DD76C00E95A52 /* SyntaxData.swift */,
+				14B3F211205DD76B00E95A52 /* SyntaxFactory.swift */,
+				14B3F21B205DD76C00E95A52 /* SyntaxKind.swift */,
+				14B3F209205DD76B00E95A52 /* SyntaxNodes.swift */,
+				14B3F234205DDD6500E95A52 /* SyntaxNodes.swift.gyb */,
+				14B3F213205DD76C00E95A52 /* SyntaxRewriter.swift */,
+				14B3F21D205DD76D00E95A52 /* TokenKind.swift */,
+				14B3F20C205DD76B00E95A52 /* Trivia.swift */,
 			);
 			name = SwiftSyntax;
 			path = Sources/SwiftSyntax;
@@ -141,20 +220,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		"SwiftSyntax::SwiftPMPackageDescription" /* SwiftSyntaxPackageDescription */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_33 /* Build configuration list for PBXNativeTarget "SwiftSyntaxPackageDescription" */;
-			buildPhases = (
-				OBJ_36 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = SwiftSyntaxPackageDescription;
-			productName = SwiftSyntaxPackageDescription;
-			productType = "com.apple.product-type.framework";
-		};
 		"SwiftSyntax::SwiftSyntax" /* SwiftSyntax */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = OBJ_48 /* Build configuration list for PBXNativeTarget "SwiftSyntax" */;
@@ -171,23 +236,6 @@
 			productReference = "SwiftSyntax::SwiftSyntax::Product" /* SwiftSyntax.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		"SwiftSyntax::format-example" /* format-example */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_39 /* Build configuration list for PBXNativeTarget "format-example" */;
-			buildPhases = (
-				OBJ_42 /* Sources */,
-				OBJ_44 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				OBJ_46 /* PBXTargetDependency */,
-			);
-			name = "format-example";
-			productName = format_example;
-			productReference = "SwiftSyntax::format-example::Product" /* format-example */;
-			productType = "com.apple.product-type.tool";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -195,6 +243,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 9999;
+				TargetAttributes = {
+					"SwiftSyntax::SwiftSyntax" = {
+						LastSwiftMigration = 0920;
+					};
+				};
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "SwiftSyntax" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -204,65 +257,45 @@
 				en,
 			);
 			mainGroup = OBJ_5;
-			productRefGroup = OBJ_29 /* Products */;
+			productRefGroup = OBJ_5;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				"SwiftSyntax::SwiftPMPackageDescription" /* SwiftSyntaxPackageDescription */,
-				"SwiftSyntax::format-example" /* format-example */,
 				"SwiftSyntax::SwiftSyntax" /* SwiftSyntax */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		OBJ_36 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 0;
-			files = (
-				OBJ_37 /* Package.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_42 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		OBJ_51 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_52 /* AtomicCache.swift in Sources */,
-				OBJ_53 /* RawSyntax.swift in Sources */,
-				OBJ_54 /* SourcePresence.swift in Sources */,
-				OBJ_55 /* SwiftSyntax.swift in Sources */,
-				OBJ_56 /* SwiftcInvocation.swift in Sources */,
-				OBJ_57 /* Syntax.swift in Sources */,
-				OBJ_58 /* SyntaxBuilders.swift in Sources */,
-				OBJ_59 /* SyntaxChildren.swift in Sources */,
-				OBJ_60 /* SyntaxCollection.swift in Sources */,
-				OBJ_61 /* SyntaxData.swift in Sources */,
-				OBJ_62 /* SyntaxFactory.swift in Sources */,
-				OBJ_63 /* SyntaxKind.swift in Sources */,
-				OBJ_64 /* SyntaxNodes.swift in Sources */,
-				OBJ_65 /* SyntaxRewriter.swift in Sources */,
-				OBJ_66 /* TokenKind.swift in Sources */,
-				OBJ_67 /* Trivia.swift in Sources */,
+				14B3F226205DD76D00E95A52 /* SyntaxBuilders.swift in Sources */,
+				14B3F229205DD76D00E95A52 /* SyntaxRewriter.swift in Sources */,
+				14B3F21F205DD76D00E95A52 /* SyntaxNodes.swift in Sources */,
+				14B3F22D205DD76D00E95A52 /* DiagnosticConsumer.swift in Sources */,
+				14B3F227205DD76D00E95A52 /* SyntaxFactory.swift in Sources */,
+				14B3F22F205DD76D00E95A52 /* Syntax.swift in Sources */,
+				14B3F225205DD76D00E95A52 /* JSONDiagnosticConsumer.swift in Sources */,
+				14B3F22C205DD76D00E95A52 /* Diagnostic.swift in Sources */,
+				14B3F233205DD76D00E95A52 /* TokenKind.swift in Sources */,
+				14B3F228205DD76D00E95A52 /* SourcePresence.swift in Sources */,
+				14B3F222205DD76D00E95A52 /* Trivia.swift in Sources */,
+				14B3F220205DD76D00E95A52 /* SyntaxCollections.swift in Sources */,
+				14B3F224205DD76D00E95A52 /* SwiftcInvocation.swift in Sources */,
+				14B3F232205DD76D00E95A52 /* SyntaxChildren.swift in Sources */,
+				14B3F22B205DD76D00E95A52 /* SyntaxData.swift in Sources */,
+				14B3F21E205DD76D00E95A52 /* PrintingDiagnosticConsumer.swift in Sources */,
+				14B3F22E205DD76D00E95A52 /* SwiftSyntax.swift in Sources */,
+				14B3F231205DD76D00E95A52 /* SyntaxKind.swift in Sources */,
+				14B3F223205DD76D00E95A52 /* AtomicCache.swift in Sources */,
+				14B3F22A205DD76D00E95A52 /* DiagnosticEngine.swift in Sources */,
+				14B3F230205DD76D00E95A52 /* RawSyntax.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		OBJ_46 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = "SwiftSyntax::SwiftSyntax" /* SwiftSyntax */;
-			targetProxy = D6BAA1E61F60FDA300A9A524 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		OBJ_3 /* Debug */ = {
@@ -287,24 +320,6 @@
 			};
 			name = Debug;
 		};
-		OBJ_34 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				LD = /usr/bin/true;
-				OTHER_SWIFT_FLAGS = "-swift-version 4 -I /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/pm/4 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk";
-				SWIFT_VERSION = 4.0;
-			};
-			name = Debug;
-		};
-		OBJ_35 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				LD = /usr/bin/true;
-				OTHER_SWIFT_FLAGS = "-swift-version 4 -I /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/pm/4 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk";
-				SWIFT_VERSION = 4.0;
-			};
-			name = Release;
-		};
 		OBJ_4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -325,47 +340,11 @@
 			};
 			name = Release;
 		};
-		OBJ_40 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = SwiftSyntax.xcodeproj/format_example_Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
-				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
-				SWIFT_VERSION = 4.0;
-				TARGET_NAME = "format-example";
-			};
-			name = Debug;
-		};
-		OBJ_41 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = SwiftSyntax.xcodeproj/format_example_Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
-				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
-				SWIFT_VERSION = 4.0;
-				TARGET_NAME = "format-example";
-			};
-			name = Release;
-		};
 		OBJ_49 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				DEFINES_MODULE = YES;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -380,6 +359,7 @@
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGET_NAME = SwiftSyntax;
 			};
@@ -388,6 +368,8 @@
 		OBJ_50 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				DEFINES_MODULE = YES;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -415,24 +397,6 @@
 			buildConfigurations = (
 				OBJ_3 /* Debug */,
 				OBJ_4 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		OBJ_33 /* Build configuration list for PBXNativeTarget "SwiftSyntaxPackageDescription" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_34 /* Debug */,
-				OBJ_35 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		OBJ_39 /* Build configuration list for PBXNativeTarget "format-example" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_40 /* Debug */,
-				OBJ_41 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

@@ -55,43 +55,39 @@ struct ProcessResult {
 ///   - arguments: A list of strings to pass to the process as arguments.
 /// - Returns: A ProcessResult containing stdout, stderr, and the exit code.
 func run(_ executable: URL, arguments: [String] = []) -> ProcessResult {
-  let stdoutPipe = Pipe()
-  var stdoutData = Data()
-  stdoutPipe.fileHandleForReading.readabilityHandler = { file in
-    stdoutData.append(file.availableData)
+  // Use an autoreleasepool to prevent memory- and file-descriptor leaks.
+  return autoreleasepool {
+    () -> ProcessResult in
+    
+    let stdoutPipe = Pipe()
+    var stdoutData = Data()
+    stdoutPipe.fileHandleForReading.readabilityHandler = { file in
+      stdoutData.append(file.availableData)
+    }
+    
+    let stderrPipe = Pipe()
+    var stderrData = Data()
+    stderrPipe.fileHandleForReading.readabilityHandler = { file in
+      stderrData.append(file.availableData)
+    }
+    
+    let process = Process()
+    
+    process.terminationHandler = { process in
+      stdoutPipe.fileHandleForReading.readabilityHandler = nil
+      stderrPipe.fileHandleForReading.readabilityHandler = nil
+    }
+    
+    process.launchPath = executable.path
+    process.arguments = arguments
+    process.standardOutput = stdoutPipe
+    process.standardError = stderrPipe
+    process.launch()
+    process.waitUntilExit()
+    return ProcessResult(exitCode: Int(process.terminationStatus),
+                         stdoutData: stdoutData,
+                         stderrData: stderrData)
   }
-
-  let stderrPipe = Pipe()
-  var stderrData = Data()
-  stderrPipe.fileHandleForReading.readabilityHandler = { file in
-    stderrData.append(file.availableData)
-  }
-
-  let process = Process()
-
-  process.terminationHandler = { process in
-    stdoutPipe.fileHandleForReading.readabilityHandler = nil
-    stderrPipe.fileHandleForReading.readabilityHandler = nil
-  }
-
-  process.launchPath = executable.path
-  process.arguments = arguments
-  process.standardOutput = stdoutPipe
-  process.standardError = stderrPipe
-  process.launch()
-  process.waitUntilExit()
-  return ProcessResult(exitCode: Int(process.terminationStatus),
-                       stdoutData: stdoutData,
-                       stderrData: stderrData)
-}
-
-func runPathGetCommand(_ command: [String]) -> URL? {
-  let url = URL(fileURLWithPath: command[0])
-  let result = run(url, arguments: Array<String>(command.dropFirst()))
-  guard result.wasSuccessful else { return nil }
-  let path = result.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
-  guard !path.isEmpty else { return nil }
-  return URL(fileURLWithPath: path)
 }
 
 /// Finds the dylib or executable which the provided address falls in.
@@ -134,7 +130,14 @@ struct SwiftcRunner {
   ///               - ${target}/
   ///                 - libswiftSwiftSyntax.[dylib|so]
   ///         ```
-  static func locateSwiftcRelatively() -> URL? {
+  static func locateSwiftc() -> URL? {
+    if let swiftcPath = ProcessInfo.processInfo.environment["SWIFTC_PATH"] ?? UserDefaults.standard.string(forKey: "SWIFTC_PATH") {
+        let swiftcURL = URL(fileURLWithPath: swiftcPath)
+        guard FileManager.default.fileExists(atPath: swiftcURL.path) else {
+            return nil
+        }
+        return swiftcURL
+    }
     guard let libraryPath = findFirstObjectFile() else { return nil }
     let swiftcURL = libraryPath.deletingLastPathComponent()
                                .deletingLastPathComponent()
@@ -147,16 +150,7 @@ struct SwiftcRunner {
     }
     return swiftcURL
   }
-  
-  static func locateSystemSwiftc() -> URL? {
-    return runPathGetCommand(["/usr/bin/which", "swiftc"])
-  }
-  
-  static func locateSwiftc() -> URL? {
-    return locateSwiftcRelatively() ??
-      locateSystemSwiftc()
-  }
-    
+
 #if os(macOS)
   /// The location of the macOS SDK, or `nil` if it could not be found.
   static let macOSSDK: String? = {

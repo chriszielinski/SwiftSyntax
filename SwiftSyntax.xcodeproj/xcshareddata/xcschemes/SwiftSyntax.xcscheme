@@ -14,20 +14,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SwiftSyntax::format-example"
-               BuildableName = "format-example"
-               BlueprintName = "format-example"
-               ReferencedContainer = "container:SwiftSyntax.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "SwiftSyntax::SwiftSyntax"
                BuildableName = "SwiftSyntax.framework"
                BlueprintName = "SwiftSyntax"
@@ -44,6 +30,15 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "SwiftSyntax::format-example"
+            BuildableName = "format-example"
+            BlueprintName = "format-example"
+            ReferencedContainer = "container:SwiftSyntax.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -61,9 +56,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "SwiftSyntax::format-example"
-            BuildableName = "format-example"
-            BlueprintName = "format-example"
+            BlueprintIdentifier = "SwiftSyntax::SwiftSyntax"
+            BuildableName = "SwiftSyntax.framework"
+            BlueprintName = "SwiftSyntax"
             ReferencedContainer = "container:SwiftSyntax.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -76,6 +71,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "SwiftSyntax::SwiftSyntax"
+            BuildableName = "SwiftSyntax.framework"
+            BlueprintName = "SwiftSyntax"
+            ReferencedContainer = "container:SwiftSyntax.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

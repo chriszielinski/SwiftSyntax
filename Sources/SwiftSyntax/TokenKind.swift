@@ -14,7 +14,6 @@
 
 /// Enumerates the kinds of tokens in the Swift language.
 public enum TokenKind: Codable {
-  case unknown
   case eof
   case associatedtypeKeyword
   case classKeyword
@@ -84,7 +83,13 @@ public enum TokenKind: Codable {
   case poundFileKeyword
   case poundLineKeyword
   case poundColumnKeyword
+  case poundDsohandleKeyword
   case poundFunctionKeyword
+  case poundSelectorKeyword
+  case poundKeyPathKeyword
+  case poundColorLiteralKeyword
+  case poundFileLiteralKeyword
+  case poundImageLiteralKeyword
   case arrow
   case atSign
   case colon
@@ -101,10 +106,15 @@ public enum TokenKind: Codable {
   case rightSquareBracket
   case leftAngle
   case rightAngle
-  case ampersand
+  case prefixAmpersand
   case postfixQuestionMark
   case infixQuestionMark
   case exclamationMark
+  case backslash
+  case stringInterpolationAnchor
+  case stringQuote
+  case multilineStringQuote
+  case stringSegment(String)
   case identifier(String)
   case dollarIdentifier(String)
   case unspacedBinaryOperator(String)
@@ -114,11 +124,12 @@ public enum TokenKind: Codable {
   case integerLiteral(String)
   case floatingLiteral(String)
   case stringLiteral(String)
+  case contextualKeyword(String)
+  case unknown(String)
 
   /// The textual representation of this token kind.
   var text: String {
     switch self {
-    case .unknown: return "unknown"
     case .eof: return ""
     case .associatedtypeKeyword: return "associatedtype"
     case .classKeyword: return "class"
@@ -188,7 +199,13 @@ public enum TokenKind: Codable {
     case .poundFileKeyword: return "#file"
     case .poundLineKeyword: return "#line"
     case .poundColumnKeyword: return "#column"
+    case .poundDsohandleKeyword: return "#dsohandle"
     case .poundFunctionKeyword: return "#function"
+    case .poundSelectorKeyword: return "#selector"
+    case .poundKeyPathKeyword: return "#keyPath"
+    case .poundColorLiteralKeyword: return "#colorLiteral"
+    case .poundFileLiteralKeyword: return "#fileLiteral"
+    case .poundImageLiteralKeyword: return "#imageLiteral"
     case .arrow: return "->"
     case .atSign: return "@"
     case .colon: return ":"
@@ -205,10 +222,15 @@ public enum TokenKind: Codable {
     case .rightSquareBracket: return "]"
     case .leftAngle: return "<"
     case .rightAngle: return ">"
-    case .ampersand: return "&"
+    case .prefixAmpersand: return "&"
     case .postfixQuestionMark: return "?"
     case .infixQuestionMark: return "?"
     case .exclamationMark: return "!"
+    case .backslash: return "\\"
+    case .stringInterpolationAnchor: return ")"
+    case .stringQuote: return "\""
+    case .multilineStringQuote: return "\"\"\""
+    case .stringSegment(let text): return text
     case .identifier(let text): return text
     case .dollarIdentifier(let text): return text
     case .unspacedBinaryOperator(let text): return text
@@ -218,6 +240,8 @@ public enum TokenKind: Codable {
     case .integerLiteral(let text): return text
     case .floatingLiteral(let text): return text
     case .stringLiteral(let text): return text
+    case .contextualKeyword(let text): return text
+    case .unknown(let text): return text
     }
   }
 
@@ -226,11 +250,14 @@ public enum TokenKind: Codable {
     case kind, text
   }
 
+  enum DecodeError: Error {
+    case unknownTokenKind(String)
+  }
+
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     let kind = try container.decode(String.self, forKey: .kind)
     switch kind {
-    case "unknown": self = .unknown
     case "eof": self = .eof
     case "kw_associatedtype":
       self = .associatedtypeKeyword
@@ -368,8 +395,20 @@ public enum TokenKind: Codable {
       self = .poundLineKeyword
     case "pound_column":
       self = .poundColumnKeyword
+    case "pound_dsohandle":
+      self = .poundDsohandleKeyword
     case "pound_function":
       self = .poundFunctionKeyword
+    case "pound_selector":
+      self = .poundSelectorKeyword
+    case "pound_keyPath":
+      self = .poundKeyPathKeyword
+    case "pound_colorLiteral":
+      self = .poundColorLiteralKeyword
+    case "pound_fileLiteral":
+      self = .poundFileLiteralKeyword
+    case "pound_imageLiteral":
+      self = .poundImageLiteralKeyword
     case "arrow":
       self = .arrow
     case "at_sign":
@@ -403,13 +442,24 @@ public enum TokenKind: Codable {
     case "r_angle":
       self = .rightAngle
     case "amp_prefix":
-      self = .ampersand
+      self = .prefixAmpersand
     case "question_postfix":
       self = .postfixQuestionMark
     case "question_infix":
       self = .infixQuestionMark
     case "exclaim_postfix":
       self = .exclamationMark
+    case "backslash":
+      self = .backslash
+    case "string_interpolation_anchor":
+      self = .stringInterpolationAnchor
+    case "string_quote":
+      self = .stringQuote
+    case "multiline_string_quote":
+      self = .multilineStringQuote
+    case "string_segment":
+      let text = try container.decode(String.self, forKey: .text)
+      self = .stringSegment(text)
     case "identifier":
       let text = try container.decode(String.self, forKey: .text)
       self = .identifier(text)
@@ -437,10 +487,16 @@ public enum TokenKind: Codable {
     case "string_literal":
       let text = try container.decode(String.self, forKey: .text)
       self = .stringLiteral(text)
-    default: fatalError("unknown token kind \(kind)")
+    case "contextual_keyword":
+      let text = try container.decode(String.self, forKey: .text)
+      self = .contextualKeyword(text)
+    case "unknown":
+      let text = try container.decode(String.self, forKey: .text)
+      self = .unknown(text)
+    default: throw DecodeError.unknownTokenKind(kind)
     }
   }
-  
+
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(kind, forKey: .kind)
@@ -449,7 +505,6 @@ public enum TokenKind: Codable {
   
   var kind: String {
     switch self {
-    case .unknown: return "unknown"
     case .eof: return "eof"
     case .associatedtypeKeyword: return "kw_associatedtype"
     case .classKeyword: return "kw_class"
@@ -519,7 +574,13 @@ public enum TokenKind: Codable {
     case .poundFileKeyword: return "pound_file"
     case .poundLineKeyword: return "pound_line"
     case .poundColumnKeyword: return "pound_column"
+    case .poundDsohandleKeyword: return "pound_dsohandle"
     case .poundFunctionKeyword: return "pound_function"
+    case .poundSelectorKeyword: return "pound_selector"
+    case .poundKeyPathKeyword: return "pound_keyPath"
+    case .poundColorLiteralKeyword: return "pound_colorLiteral"
+    case .poundFileLiteralKeyword: return "pound_fileLiteral"
+    case .poundImageLiteralKeyword: return "pound_imageLiteral"
     case .arrow: return "arrow"
     case .atSign: return "at_sign"
     case .colon: return "colon"
@@ -536,10 +597,15 @@ public enum TokenKind: Codable {
     case .rightSquareBracket: return "r_square"
     case .leftAngle: return "l_angle"
     case .rightAngle: return "r_angle"
-    case .ampersand: return "amp_prefix"
+    case .prefixAmpersand: return "amp_prefix"
     case .postfixQuestionMark: return "question_postfix"
     case .infixQuestionMark: return "question_infix"
     case .exclamationMark: return "exclaim_postfix"
+    case .backslash: return "backslash"
+    case .stringInterpolationAnchor: return "string_interpolation_anchor"
+    case .stringQuote: return "string_quote"
+    case .multilineStringQuote: return "multiline_string_quote"
+    case .stringSegment(_): return "string_segment"
     case .identifier(_): return "identifier"
     case .dollarIdentifier(_): return "dollarident"
     case .unspacedBinaryOperator(_): return "oper_binary_unspaced"
@@ -549,6 +615,8 @@ public enum TokenKind: Codable {
     case .integerLiteral(_): return "integer_literal"
     case .floatingLiteral(_): return "floating_literal"
     case .stringLiteral(_): return "string_literal"
+    case .contextualKeyword(_): return "contextual_keyword"
+    case .unknown(_): return "unknown"
     }
   }
 }
@@ -556,7 +624,6 @@ public enum TokenKind: Codable {
 extension TokenKind: Equatable {
   public static func ==(lhs: TokenKind, rhs: TokenKind) -> Bool {
     switch (lhs, rhs) {
-    case (.unknown, .unknown): return true
     case (.eof, .eof): return true
     case (.associatedtypeKeyword, .associatedtypeKeyword): return true
     case (.classKeyword, .classKeyword): return true
@@ -626,7 +693,13 @@ extension TokenKind: Equatable {
     case (.poundFileKeyword, .poundFileKeyword): return true
     case (.poundLineKeyword, .poundLineKeyword): return true
     case (.poundColumnKeyword, .poundColumnKeyword): return true
+    case (.poundDsohandleKeyword, .poundDsohandleKeyword): return true
     case (.poundFunctionKeyword, .poundFunctionKeyword): return true
+    case (.poundSelectorKeyword, .poundSelectorKeyword): return true
+    case (.poundKeyPathKeyword, .poundKeyPathKeyword): return true
+    case (.poundColorLiteralKeyword, .poundColorLiteralKeyword): return true
+    case (.poundFileLiteralKeyword, .poundFileLiteralKeyword): return true
+    case (.poundImageLiteralKeyword, .poundImageLiteralKeyword): return true
     case (.arrow, .arrow): return true
     case (.atSign, .atSign): return true
     case (.colon, .colon): return true
@@ -643,10 +716,16 @@ extension TokenKind: Equatable {
     case (.rightSquareBracket, .rightSquareBracket): return true
     case (.leftAngle, .leftAngle): return true
     case (.rightAngle, .rightAngle): return true
-    case (.ampersand, .ampersand): return true
+    case (.prefixAmpersand, .prefixAmpersand): return true
     case (.postfixQuestionMark, .postfixQuestionMark): return true
     case (.infixQuestionMark, .infixQuestionMark): return true
     case (.exclamationMark, .exclamationMark): return true
+    case (.backslash, .backslash): return true
+    case (.stringInterpolationAnchor, .stringInterpolationAnchor): return true
+    case (.stringQuote, .stringQuote): return true
+    case (.multilineStringQuote, .multilineStringQuote): return true
+    case (.stringSegment(let lhsText), .stringSegment(let rhsText)):
+      return lhsText == rhsText
     case (.identifier(let lhsText), .identifier(let rhsText)):
       return lhsText == rhsText
     case (.dollarIdentifier(let lhsText), .dollarIdentifier(let rhsText)):
@@ -664,6 +743,10 @@ extension TokenKind: Equatable {
     case (.floatingLiteral(let lhsText), .floatingLiteral(let rhsText)):
       return lhsText == rhsText
     case (.stringLiteral(let lhsText), .stringLiteral(let rhsText)):
+      return lhsText == rhsText
+    case (.contextualKeyword(let lhsText), .contextualKeyword(let rhsText)):
+      return lhsText == rhsText
+    case (.unknown(let lhsText), .unknown(let rhsText)):
       return lhsText == rhsText
     default: return false
     }
